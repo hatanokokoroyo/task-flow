@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.egg
+.venv/
+venv/
+ENV/
+.env
+.env.*
+
+# Node.js
+node_modules/
+.npm/
+.pnpm-store/
+*.log
+
+# Build outputs
+/dist/
+/build/
+/out/
+
+# Vite
+.vite/
+
+# Coverage and caches
+.coverage
+coverage/
+.cache/
+.pytest_cache/
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+automation.log

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Flow - 工作日志管理系统原型</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        .status-todo { background-color: #f3f4f6; color: #374151; } /* 待处理 - 灰色 */
+        .status-design { background-color: #dbeafe; color: #1e40af; } /* 设计中 - 蓝色 */
+        .status-dev { background-color: #dcfce7; color: #166534; } /* 开发中 - 绿色 */
+        .status-test { background-color: #fef9c3; color: #854d0e; } /* 测试中 - 黄色 */
+        .status-deploy { background-color: #ffedd5; color: #9a3412; } /* 交付中 - 橙色 */
+        .status-done { background-color: #dcfce7; color: #166534; } /* 已完成 - 绿色 */
+        
+        .tab-active { border-bottom: 2px solid #3b82f6; color: #3b82f6; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <div class="p-6 border-b border-gray-200">
+                <h1 class="text-xl font-bold flex items-center gap-2">
+                    <i class="fas fa-tasks text-blue-600"></i>
+                    Task Flow
+                </h1>
+                <p class="text-xs text-gray-500 mt-1">本地工作日志系统</p>
+            </div>
+            <nav class="flex-1 overflow-y-auto p-4 space-y-2">
+                <a href="index.html" class="flex items-center gap-3 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-medium">
+                    <i class="fas fa-list-ul"></i>
+                    工作项管理
+                </a>
+                <a href="daily-log.html" class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="fas fa-calendar-day"></i>
+                    按天日志查看
+                </a>
+                <a href="recycle-bin.html" class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="fas fa-trash-alt"></i>
+                    回收站
+                </a>
+                <div class="pt-4 border-t border-gray-100 mt-4">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 mb-2">我的分类</p>
+                    <a href="#" class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                        <i class="fas fa-circle text-xs text-blue-400"></i>
+                        项目 A
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                        <i class="fas fa-circle text-xs text-green-400"></i>
+                        个人提升
+                    </a>
+                </div>
+            </nav>
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center gap-3 px-2">
+                    <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">我</div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium truncate">本地用户</p>
+                        <p class="text-xs text-gray-500 truncate">离线模式</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- Topbar -->
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
+                <div class="flex items-center flex-1">
+                    <div class="relative w-64">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" placeholder="搜索工作项..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
+                        <i class="fas fa-plus"></i>
+                        新建工作项
+                    </button>
+                    <button class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-cog text-xl"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Scrollable Content Interface -->
+            <div class="flex-1 overflow-y-auto p-6">
+                
+                <!-- View: Work Item Management -->
+                <section>
+                    <div class="mb-6 flex items-center justify-between">
+                        <h2 class="text-2xl font-bold">工作项列表</h2>
+                        <div class="flex items-center gap-2">
+                            <select class="border border-gray-300 rounded-md px-3 py-1.5 text-sm">
+                                <option>所有状态</option>
+                                <option>待处理</option>
+                                <option>进行中</option>
+                                <option>已完成</option>
+                            </select>
+                            <select class="border border-gray-300 rounded-md px-3 py-1.5 text-sm">
+                                <option>按开始时间排序</option>
+                                <option>按结束时间排序</option>
+                                <option>按标题排序</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Work Items List -->
+                    <div class="bg-white shadow rounded-lg overflow-hidden border border-gray-200">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">标题</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">开始日期</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">结束日期</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">子任务进度</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <!-- Row 1 -->
+                                <tr class="hover:bg-gray-50 cursor-pointer">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">核心架构设计</div>
+                                        <div class="text-xs text-gray-500">定义系统整体拓扑与数据流</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium status-design">设计中</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2026-02-04 09:00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2026-02-05 18:00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="w-full bg-gray-200 rounded-full h-2 w-24">
+                                            <div class="bg-blue-600 h-2 rounded-full" style="width: 60%"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 mt-1">3/5 已完成 (60%)</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3">编辑</button>
+                                        <button class="text-red-600 hover:text-red-900">删除</button>
+                                    </td>
+                                </tr>
+                                <!-- Row 2 -->
+                                <tr class="hover:bg-gray-50 cursor-pointer">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">用户认证功能开发</div>
+                                        <div class="text-xs text-gray-500">基于JWT的登录与权限校验</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium status-dev">开发中</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2026-02-01 10:00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2026-02-03 12:00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="w-full bg-gray-200 rounded-full h-2 w-24">
+                                            <div class="bg-blue-600 h-2 rounded-full" style="width: 20%"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 mt-1">1/5 已完成 (20%)</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3">编辑</button>
+                                        <button class="text-red-600 hover:text-red-900">删除</button>
+                                    </td>
+                                </tr>
+                                <!-- Row 3 -->
+                                <tr class="hover:bg-gray-50 cursor-pointer">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">需求文档评审</div>
+                                        <div class="text-xs text-gray-500">与产品团队沟通确认细节</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium status-done">已完成</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2026-01-30 14:00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2026-01-30 16:00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="w-full bg-gray-200 rounded-full h-2 w-24">
+                                            <div class="bg-green-600 h-2 rounded-full" style="width: 100%"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 mt-1">2/2 已完成 (100%)</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3">编辑</button>
+                                        <button class="text-red-600 hover:text-red-900">删除</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!-- Pagination Simulation -->
+                        <div class="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
+                            <div class="text-sm text-gray-700">显示 <span class="font-medium">1</span> 到 <span class="font-medium">3</span> 共 <span class="font-medium">3</span> 条结果</div>
+                            <div class="flex gap-2">
+                                <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-500 cursor-not-allowed">上一页</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded bg-white hover:bg-gray-50 text-gray-700">下一页</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <hr class="my-10 border-gray-200">
+
+                <!-- View Detail Simulation (Overlay or Section) -->
+                <section class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-medium status-design">设计中</span>
+                                <span class="text-xs text-gray-500">创建于: 2026-02-04 09:12:45</span>
+                            </div>
+                            <h3 class="text-3xl font-bold text-gray-900">核心架构设计</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="p-2 text-gray-400 hover:text-blue-600 border border-gray-200 rounded-lg"><i class="fas fa-edit"></i></button>
+                            <button class="p-2 text-gray-400 hover:text-red-600 border border-gray-200 rounded-lg"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6 mb-8 text-sm">
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <p class="text-gray-500 mb-1">开始时间</p>
+                            <p class="font-semibold text-gray-900">2026-02-04 09:00</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <p class="text-gray-500 mb-1">截止时间</p>
+                            <p class="font-semibold text-gray-900">2026-02-05 18:00</p>
+                        </div>
+                    </div>
+
+                    <div class="prose max-w-none text-gray-700 mb-10">
+                        <h4 class="text-lg font-semibold mb-2">详细说明</h4>
+                        <p>需要基于现代云原生架构，使用 Micro-frontend 方案调研主框架。重点考虑以下几点：</p>
+                        <ul class="list-disc pl-5 space-y-2 mt-2">
+                            <li>数据持久化方案（SQLite vs LocalStorage）</li>
+                            <li>跨端组件库选择</li>
+                            <li>性能与加密需求评估</li>
+                        </ul>
+                    </div>
+
+                    <!-- Sub-tasks Section -->
+                    <div class="mb-10">
+                        <div class="flex items-center justify-between mb-4 border-b pb-2">
+                            <h4 class="text-lg font-bold flex items-center gap-2">
+                                <i class="fas fa-sitemap text-blue-500"></i>
+                                子工作项 (5)
+                            </h4>
+                            <button class="text-sm text-blue-600 hover:underline font-medium">+ 添加子项</button>
+                        </div>
+                        <div class="space-y-3">
+                            <!-- Sub-task Item -->
+                            <div class="border border-gray-100 rounded-lg p-3 hover:border-blue-200 transition-colors bg-gray-50/50 ml-4 border-l-4 border-l-blue-400">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-4">
+                                        <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                                        <span class="text-sm font-semibold">数据库模式选型</span>
+                                        <span class="px-2 py-0.5 rounded text-[10px] status-done">已完成</span>
+                                    </div>
+                                    <span class="text-[10px] text-gray-400">2026-02-04 10:00</span>
+                                </div>
+                            </div>
+                            <!-- Nested Sub-task -->
+                            <div class="border border-gray-100 rounded-lg p-3 hover:border-blue-200 transition-colors bg-white ml-12 border-l-4 border-l-green-400">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-sm font-medium">SQLite3 性能基准测试</span>
+                                        <span class="px-2 py-0.5 rounded text-[10px] status-done">已完成</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border border-gray-100 rounded-lg p-3 hover:border-blue-200 transition-colors bg-white ml-4 border-l-4 border-l-gray-300">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-4">
+                                        <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
+                                        <span class="text-sm font-semibold text-gray-600">UI 框架对比汇报</span>
+                                        <span class="px-2 py-0.5 rounded text-[10px] status-todo">待处理</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comments Section -->
+                    <div>
+                        <div class="flex items-center justify-between mb-4 border-b pb-2">
+                            <h4 class="text-lg font-bold flex items-center gap-2">
+                                <i class="fas fa-comments text-purple-500"></i>
+                                历史日志与评论
+                            </h4>
+                        </div>
+                        
+                        <!-- Comment Input -->
+                        <div class="mb-6">
+                            <textarea placeholder="在这里记录进展或添加评论... (支持 Markdown)" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px] text-sm"></textarea>
+                            <div class="mt-2 flex justify-end">
+                                <button class="bg-blue-600 text-white px-4 py-1.5 rounded-md text-sm font-medium">发表评论</button>
+                            </div>
+                        </div>
+
+                        <!-- Comment List (Reverse Timeline) -->
+                        <div class="space-y-6">
+                            <div class="flex gap-4">
+                                <div class="w-8 h-8 rounded-full bg-blue-600 flex-shrink-0 flex items-center justify-center text-white text-xs font-bold font-bold">我</div>
+                                <div class="flex-1 bg-gray-50 p-4 rounded-xl border border-gray-100 relative">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-xs font-bold">本地用户</span>
+                                        <span class="text-[10px] text-gray-400">2026-02-04 14:30:25</span>
+                                    </div>
+                                    <div class="text-sm text-gray-700">
+                                        状态变更为 <strong class="text-blue-600">设计中</strong>。开始进行技术方案设计。
+                                    </div>
+                                    <div class="mt-3 flex gap-4 text-[10px] text-gray-400">
+                                        <button class="hover:text-blue-600">编辑</button>
+                                        <button class="hover:text-red-600">删除</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4">
+                                <div class="w-8 h-8 rounded-full bg-blue-600 flex-shrink-0 flex items-center justify-center text-white text-xs font-bold font-bold">我</div>
+                                <div class="flex-1 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-xs font-bold">本地用户</span>
+                                        <span class="text-[10px] text-gray-400">2026-02-04 11:20:10</span>
+                                    </div>
+                                    <div class="text-sm text-gray-700 prose prose-sm">
+                                        完成了初步的<strong>数据库调研</strong>，结论是：
+                                        <ul>
+                                            <li>LocalStorage 方案无法承载大量数据</li>
+                                            <li>建议使用 <strong>IndexedDB</strong> 或本地文件 SQLite。</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Mockup - Create Item -->
+    <div class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 class="text-xl font-bold">新建工作项</h3>
+                <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1 leading-none">标题 *</label>
+                    <input type="text" class="w-full border rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 outline-none" placeholder="输入简洁的标题 (200字符内)">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">开始时间 *</label>
+                        <input type="datetime-local" class="w-full border rounded-md px-3 py-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">结束时间 *</label>
+                        <input type="datetime-local" class="w-full border rounded-md px-3 py-2 text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">关联状态</label>
+                    <select class="w-full border rounded-md px-3 py-2 text-sm">
+                        <option>待处理</option>
+                        <option>设计中</option>
+                        <option>开发中</option>
+                        <option>测试中</option>
+                        <option>交付中</option>
+                        <option>已完成</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">详细详情</label>
+                    <textarea class="w-full border rounded-md px-3 py-2 text-sm min-h-[150px]" placeholder="支持纯文本或富文本说明..."></textarea>
+                </div>
+            </div>
+            <div class="p-6 bg-gray-50 border-t flex justify-end gap-3">
+                <button class="px-4 py-2 border rounded-md text-sm font-medium bg-white hover:bg-gray-100">取消</button>
+                <button class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">创建并保存</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
