@@ -12,7 +12,7 @@
       <div class="flex items-center gap-3 text-sm">
         <router-link to="/" class="breadcrumb-link">工作项管理</router-link>
         <span class="breadcrumb-sep">/</span>
-        <template v-for="(a, idx) in ancestors" :key="a.id">
+        <template v-for="a in ancestors" :key="a.id">
           <router-link :to="`/work-item/${a.id}`" class="breadcrumb-link">{{ a.title }}</router-link>
           <span class="breadcrumb-sep">/</span>
         </template>
@@ -46,9 +46,10 @@
         </div>
 
         <MarkdownViewer 
-          v-if="currentItem.content" 
           :content="currentItem.content" 
+          editable
           class="mb-4"
+          @save="handleUpdateContent"
         />
 
         <div class="flex items-center gap-6 text-sm text-slate-500">
@@ -238,7 +239,8 @@ watch(
   { immediate: true }
 )
 
-function formatDate(date: string) {
+function formatDate(date: string | null) {
+  if (!date) return ''
   return dayjs(date).format('YYYY-MM-DD HH:mm')
 }
 
@@ -246,7 +248,7 @@ function goToDetail(item: WorkItem) {
   router.push(`/work-item/${item.id}`)
 }
 
-async function onSave(payload: { workItemId?: number | null; status: string }) {
+async function onSave(payload: { workItemId?: number | null; status: any }) {
   if (!currentItem.value) return
   saving.value = true
   try {
@@ -309,6 +311,17 @@ async function handleUpdateWorkItem(data: CreateWorkItemDto) {
     toast.error(err.message || '更新失败')
   } finally {
     formLoading.value = false
+  }
+}
+
+async function handleUpdateContent(content: string) {
+  if (!currentItem.value) return
+  try {
+    await workItemApi.updateWorkItem(currentItem.value.id, { content })
+    toast.success('描述已更新')
+    await store.fetchWorkItem(id.value)
+  } catch (err: any) {
+    toast.error(err.message || '更新失败')
   }
 }
 
