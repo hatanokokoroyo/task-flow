@@ -29,7 +29,7 @@
       <div
         v-for="item in items"
         :key="item.id"
-        class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex items-center justify-between"
+        class="bg-white rounded-xl p-5 shadow-sm border border-slate-100 flex items-center justify-between"
       >
         <div>
           <h3 class="font-semibold text-slate-800 mb-1">{{ item.title }}</h3>

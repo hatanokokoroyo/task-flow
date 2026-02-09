@@ -41,7 +41,7 @@ defineEmits<{
   @apply bg-white rounded-xl shadow-xl w-full max-h-[90vh] overflow-y-auto;
 }
 .modal-header {
-  @apply flex items-center justify-between px-6 py-5 border-b border-slate-200;
+  @apply flex items-center justify-between px-6 py-5 border-b border-slate-100;
 }
 .modal-title {
   @apply text-lg font-semibold;
@@ -53,7 +53,7 @@ defineEmits<{
   @apply p-6;
 }
 .modal-footer {
-  @apply flex justify-end gap-3 px-6 py-4 border-t border-slate-200;
+  @apply flex justify-end gap-3 px-6 py-4 border-t border-slate-100;
 }
 
 .modal-enter-active,

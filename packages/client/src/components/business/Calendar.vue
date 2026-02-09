@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+  <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
     <!-- 月份导航 -->
     <div class="flex items-center justify-between mb-4">
       <button class="p-2 hover:bg-slate-100 rounded" @click="prevMonth">◀</button>

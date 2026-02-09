@@ -2,19 +2,19 @@
   <AppLayout title="工作项管理">
     <!-- 统计卡片 -->
     <div class="grid grid-cols-4 gap-4 mb-6">
-      <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+      <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
         <div class="text-2xl font-bold text-slate-800">{{ stats.total }}</div>
         <div class="text-sm text-slate-500">全部工作项</div>
       </div>
-      <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+      <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
         <div class="text-2xl font-bold text-slate-500">{{ stats.pending }}</div>
         <div class="text-sm text-slate-500">待处理</div>
       </div>
-      <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+      <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
         <div class="text-2xl font-bold text-blue-500">{{ stats.inProgress }}</div>
         <div class="text-sm text-slate-500">进行中</div>
       </div>
-      <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+      <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
         <div class="text-2xl font-bold text-green-500">{{ stats.done }}</div>
         <div class="text-sm text-slate-500">已完成</div>
       </div>

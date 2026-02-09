@@ -30,7 +30,7 @@ const renderedContent = computed(() => {
 }
 
 .markdown-container :deep(.prose pre) {
-  @apply bg-slate-800 text-slate-100 rounded-lg p-4 my-4;
+  @apply bg-slate-50 border border-slate-100 text-slate-700 rounded-lg p-4 my-4 overflow-x-auto;
 }
 
 .markdown-container :deep(.prose code) {
