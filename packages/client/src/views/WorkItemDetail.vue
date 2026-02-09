@@ -39,9 +39,11 @@
           </div>
         </div>
 
-        <p v-if="currentItem.content" class="text-slate-600 mb-4 whitespace-pre-wrap">
-          {{ currentItem.content }}
-        </p>
+        <MarkdownViewer 
+          v-if="currentItem.content" 
+          :content="currentItem.content" 
+          class="mb-4"
+        />
 
         <div class="flex items-center gap-6 text-sm text-slate-500">
           <span v-if="currentItem.startTime">
@@ -156,6 +158,7 @@ import BaseModal from '@/components/common/BaseModal.vue'
 import StatusSelect from '@/components/common/StatusSelect.vue'
 import Toast from '@/components/common/Toast.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import MarkdownViewer from '@/components/common/MarkdownViewer.vue'
 import SubItemTree from '@/components/business/SubItemTree.vue'
 import CommentList from '@/components/business/CommentList.vue'
 import CommentForm from '@/components/business/CommentForm.vue'

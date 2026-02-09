@@ -5,9 +5,7 @@
         👤
       </div>
       <div class="flex-1">
-        <div class="bg-slate-50 rounded-lg p-3">
-          <p class="text-slate-700 whitespace-pre-wrap">{{ comment.content }}</p>
-        </div>
+        <MarkdownViewer :content="comment.content" />
         <div class="flex items-center gap-3 mt-1 text-sm text-slate-400">
           <span>{{ formatDate(comment.createdAt) }}</span>
           <button class="hover:text-slate-600" @click="$emit('edit', comment)">编辑</button>
@@ -24,6 +22,7 @@
 
 <script setup lang="ts">
 import dayjs from 'dayjs'
+import MarkdownViewer from '@/components/common/MarkdownViewer.vue'
 import type { Comment } from '@/types'
 
 defineProps<{
