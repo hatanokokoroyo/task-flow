@@ -1,31 +1,40 @@
 <template>
-  <div class="status-select-wrapper" :class="[customClass]">
-    <div :class="['status-tag', `status-${internal}`, { 'is-disabled': props.disabled }]">
-      <span class="status-dot"></span>
+  <div class="status-select-wrapper" :class="[customClass]" ref="wrapperRef">
+    <!-- 当前状态展示/触发器 -->
+    <div 
+      class="status-tag cursor-pointer active:scale-95 transition-transform"
+      :style="{ 
+        backgroundColor: config.bgColor, 
+        color: config.color 
+      }"
+      :class="[{ 'is-disabled': props.disabled }]"
+      @click.stop="toggleDropdown"
+    >
       <span class="status-text">{{ label }}</span>
+      <span class="ml-1 text-[10px] opacity-60">▼</span>
     </div>
 
-    <select
-      class="status-select-native"
-      :value="internal"
-      :disabled="props.disabled"
-      @click.stop
-      @change="onChange"
-    >
-      <option
+    <!-- 自定义下拉列表 -->
+    <div v-if="isOpen" class="status-dropdown" @click.stop>
+      <div
         v-for="(cfg, key) in STATUS_CONFIG"
         :key="key"
-        :value="key"
-        :style="{ color: cfg.color }"
+        class="status-option-item"
+        @click="onSelect(key as Status)"
       >
-        ● {{ cfg.label }}
-      </option>
-    </select>
+        <span 
+          class="status-option-tag"
+          :style="{ backgroundColor: cfg.bgColor, color: cfg.color }"
+        >
+          {{ cfg.label }}
+        </span>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted, onUnmounted } from 'vue'
 import type { Status } from '@/types'
 import { STATUS_CONFIG } from '@/types'
 
@@ -45,18 +54,29 @@ const emit = defineEmits<{
 
 const internal = ref<Status>(props.modelValue || 'pending')
 const customClass = props.class || ''
+const isOpen = ref(false)
+const wrapperRef = ref<HTMLElement | null>(null)
+
+const config = computed(() => {
+  return STATUS_CONFIG[internal.value] || STATUS_CONFIG.pending
+})
 
 const label = computed(() => {
-  return STATUS_CONFIG[internal.value]?.label || ''
+  return config.value.label
 })
 
 watch(() => props.modelValue, (v) => {
   if (v) internal.value = v
 })
 
-function onChange(e: Event) {
-  const v = (e.target as HTMLSelectElement).value as Status
+function toggleDropdown() {
+  if (props.disabled) return
+  isOpen.value = !isOpen.value
+}
+
+function onSelect(v: Status) {
   internal.value = v
+  isOpen.value = false
   emit('update:modelValue', v)
   emit('change', v)
 
@@ -64,6 +84,21 @@ function onChange(e: Event) {
     emit('save', { workItemId: props.workItemId, status: v })
   }
 }
+
+// 点击外部关闭逻辑
+function handleOutsideClick(e: MouseEvent) {
+  if (wrapperRef.value && !wrapperRef.value.contains(e.target as Node)) {
+    isOpen.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleOutsideClick)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleOutsideClick)
+})
 </script>
 
 <style scoped>
@@ -76,62 +111,56 @@ function onChange(e: Event) {
 .status-tag {
   display: inline-flex;
   align-items: center;
-  padding: 2px 10px;
-  font-size: 12px;
-  font-weight: 500;
-  border-radius: 20px;
-  gap: 6px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
   white-space: nowrap;
-  pointer-events: none;
+  user-select: none;
+  transition: all 0.2s ease;
 }
 
 .status-tag.is-disabled {
   opacity: 0.5;
-}
-
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-
-/* Status Colors from prototype styles.css */
-.status-pending { background-color: rgba(156, 163, 175, 0.15); color: #6b7280; }
-.status-pending .status-dot { background-color: #9ca3af; }
-
-.status-design { background-color: rgba(59, 130, 246, 0.15); color: #2563eb; }
-.status-design .status-dot { background-color: #3b82f6; }
-
-.status-develop { background-color: rgba(16, 185, 129, 0.15); color: #059669; }
-.status-develop .status-dot { background-color: #10b981; }
-
-.status-test { background-color: rgba(245, 158, 11, 0.15); color: #d97706; }
-.status-test .status-dot { background-color: #f59e0b; }
-
-.status-delivery { background-color: rgba(249, 115, 22, 0.15); color: #ea580c; }
-.status-delivery .status-dot { background-color: #f97316; }
-
-.status-done { background-color: rgba(34, 197, 94, 0.15); color: #16a34a; }
-.status-done .status-dot { background-color: #22c55e; }
-
-/* Native Select overlay */
-.status-select-native {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-  appearance: none;
-}
-.status-select-native:disabled {
   cursor: not-allowed;
+  pointer-events: none;
 }
 
-/* Option styling (limited browser support) */
-option {
+/* 下拉面板样式 */
+.status-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 100;
+  min-width: 110px;
+  background: white;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.status-option-item {
   padding: 4px;
-  font-weight: normal;
+}
+
+.status-option-tag {
+  display: block;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.1s ease, opacity 0.2s ease;
+}
+
+.status-option-tag:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.status-option-tag:active {
+  transform: translateY(0);
 }
 </style>

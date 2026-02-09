@@ -24,7 +24,8 @@
         <div class="flex items-start justify-between mb-4">
           <div>
             <h2 class="text-xl font-bold text-slate-800 mb-2">{{ currentItem.title }}</h2>
-            <div>
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium text-slate-500">状态：</span>
               <StatusSelect
                   v-model:modelValue="selectedStatus"
                   :workItemId="currentItem.id"
