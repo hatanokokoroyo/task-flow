@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>工作项管理 - Task Flow</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="sidebar-logo-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 11l3 3L22 4"></path>
+              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+            </svg>
+          </div>
+          <span>Task Flow</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html" class="nav-item active">
+          <span class="nav-item-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+          </span>
+          <span>工作项管理</span>
+        </a>
+        <a href="daily-log.html" class="nav-item">
+          <span class="nav-item-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </span>
+          <span>日志查看</span>
+        </a>
+        <a href="recycle-bin.html" class="nav-item">
+          <span class="nav-item-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3,6 5,6 21,6"></polyline>
+              <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"></path>
+            </svg>
+          </span>
+          <span>回收站</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+      <!-- 头部 -->
+      <header class="header">
+        <h1 class="header-title">工作项管理</h1>
+        <div class="header-actions">
+          <div class="search-box">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" class="search-input" placeholder="搜索工作项..." id="searchInput">
+          </div>
+          <button class="btn btn-primary" onclick="openCreateModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            新建工作项
+          </button>
+        </div>
+      </header>
+
+      <!-- 内容区 -->
+      <div class="content">
+        <!-- 统计卡片 -->
+        <div class="stats-grid" id="statsGrid">
+          <!-- 动态渲染 -->
+        </div>
+
+        <!-- 筛选栏 -->
+        <div class="filter-bar">
+          <div class="filter-item">
+            <label>状态筛选：</label>
+            <select id="statusFilter" onchange="filterWorkItems()">
+              <option value="">全部状态</option>
+              <option value="pending">待处理</option>
+              <option value="design">设计中</option>
+              <option value="develop">开发中</option>
+              <option value="test">测试中</option>
+              <option value="delivery">交付中</option>
+              <option value="done">已完成</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <label>排序方式：</label>
+            <select id="sortSelect" onchange="filterWorkItems()">
+              <option value="updatedAt">更新时间</option>
+              <option value="createdAt">创建时间</option>
+              <option value="startTime">开始时间</option>
+              <option value="endTime">结束时间</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 工作项列表 -->
+        <div class="work-item-list" id="workItemList">
+          <!-- 动态渲染 -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 创建/编辑工作项模态框 -->
+  <div class="modal-overlay" id="workItemModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">新建工作项</h3>
+        <button class="modal-close" onclick="closeModal('workItemModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="workItemForm">
+          <input type="hidden" id="workItemId">
+          <div class="form-group">
+            <label class="form-label">标题 *</label>
+            <input type="text" class="form-input" id="titleInput" required maxlength="200" placeholder="请输入工作项标题">
+          </div>
+          <div class="form-group">
+            <label class="form-label">内容</label>
+            <textarea class="form-textarea" id="contentInput" maxlength="5000" placeholder="请输入工作项详细内容"></textarea>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group">
+              <label class="form-label">开始时间</label>
+              <input type="datetime-local" class="form-input" id="startTimeInput">
+            </div>
+            <div class="form-group">
+              <label class="form-label">结束时间</label>
+              <input type="datetime-local" class="form-input" id="endTimeInput">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">状态</label>
+            <select class="form-select" id="statusInput">
+              <option value="pending">待处理</option>
+              <option value="design">设计中</option>
+              <option value="develop">开发中</option>
+              <option value="test">测试中</option>
+              <option value="delivery">交付中</option>
+              <option value="done">已完成</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('workItemModal')">取消</button>
+        <button class="btn btn-primary" onclick="saveWorkItem()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // 页面初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      renderStats();
+      renderWorkItems();
+      
+      // 搜索功能
+      document.getElementById('searchInput').addEventListener('input', function(e) {
+        filterWorkItems();
+      });
+    });
+
+    // 渲染统计卡片
+    function renderStats() {
+      const stats = getWorkItemStats();
+      const container = document.getElementById('statsGrid');
+      container.innerHTML = `
+        <div class="stat-card">
+          <div class="stat-label">总工作项</div>
+          <div class="stat-value">${stats.total}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">待处理</div>
+          <div class="stat-value" style="color: var(--status-pending)">${stats.pending}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">进行中</div>
+          <div class="stat-value" style="color: var(--primary-color)">${stats.inProgress}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">已完成</div>
+          <div class="stat-value" style="color: var(--status-done)">${stats.done}</div>
+        </div>
+      `;
+    }
+
+    // 渲染工作项列表
+    function renderWorkItems(items = null) {
+      const container = document.getElementById('workItemList');
+      const displayItems = items || workItems;
+      
+      if (displayItems.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <div class="empty-state-title">暂无工作项</div>
+            <div class="empty-state-desc">点击"新建工作项"按钮创建你的第一个工作项</div>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = displayItems.map(item => {
+        const subStats = calculateSubItemStats(item.subItems || []);
+        const progressHtml = subStats ? `
+          <div class="work-item-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${subStats.percentage}%"></div>
+            </div>
+            <div class="progress-text">子工作项: ${subStats.done}/${subStats.total} 已完成 (${subStats.percentage}%)</div>
+          </div>
+        ` : '';
+        
+        return `
+          <div class="work-item-card animate-slide-up" onclick="viewWorkItem(${item.id})">
+            <div class="work-item-header">
+              <div class="work-item-title">${escapeHtml(item.title)}</div>
+              ${getStatusTag(item.status)}
+            </div>
+            <div class="work-item-meta">
+              <span class="work-item-meta-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12,6 12,12 16,14"></polyline>
+                </svg>
+                ${item.startTime} - ${item.endTime}
+              </span>
+              <span class="work-item-meta-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21,15a2,2,0,0,1-2,2H7l-4,4V5A2,2,0,0,1,5,3H19a2,2,0,0,1,2,2Z"></path>
+                </svg>
+                ${(item.comments || []).length} 条评论
+              </span>
+              <span class="work-item-meta-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                </svg>
+                更新于 ${relativeTime(item.updatedAt)}
+              </span>
+            </div>
+            ${progressHtml}
+            <div class="table-actions" style="margin-top: 12px;" onclick="event.stopPropagation()">
+              <button class="btn btn-sm btn-secondary" onclick="editWorkItem(${item.id})">编辑</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteWorkItem(${item.id})">删除</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 筛选工作项
+    function filterWorkItems() {
+      const searchText = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value;
+      const sortBy = document.getElementById('sortSelect').value;
+      
+      let filtered = [...workItems];
+      
+      // 搜索过滤
+      if (searchText) {
+        filtered = filtered.filter(item => 
+          item.title.toLowerCase().includes(searchText) ||
+          item.content.toLowerCase().includes(searchText)
+        );
+      }
+      
+      // 状态过滤
+      if (statusFilter) {
+        filtered = filtered.filter(item => item.status === statusFilter);
+      }
+      
+      // 排序
+      filtered.sort((a, b) => {
+        const aVal = new Date(a[sortBy] || a.createdAt);
+        const bVal = new Date(b[sortBy] || b.createdAt);
+        return bVal - aVal;
+      });
+      
+      renderWorkItems(filtered);
+    }
+
+    // 打开创建模态框
+    function openCreateModal() {
+      document.getElementById('modalTitle').textContent = '新建工作项';
+      document.getElementById('workItemForm').reset();
+      document.getElementById('workItemId').value = '';
+      
+      // 设置默认时间
+      const now = new Date();
+      const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      document.getElementById('startTimeInput').value = now.toISOString().slice(0, 16);
+      document.getElementById('endTimeInput').value = nextWeek.toISOString().slice(0, 16);
+      
+      openModal('workItemModal');
+    }
+
+    // 编辑工作项
+    function editWorkItem(id) {
+      const item = findWorkItemById(id);
+      if (!item) return;
+      
+      document.getElementById('modalTitle').textContent = '编辑工作项';
+      document.getElementById('workItemId').value = item.id;
+      document.getElementById('titleInput').value = item.title;
+      document.getElementById('contentInput').value = item.content;
+      document.getElementById('statusInput').value = item.status;
+      
+      // 时间格式转换
+      if (item.startTime) {
+        document.getElementById('startTimeInput').value = item.startTime.replace(' ', 'T');
+      }
+      if (item.endTime) {
+        document.getElementById('endTimeInput').value = item.endTime.replace(' ', 'T');
+      }
+      
+      openModal('workItemModal');
+    }
+
+    // 保存工作项
+    function saveWorkItem() {
+      const id = document.getElementById('workItemId').value;
+      const title = document.getElementById('titleInput').value.trim();
+      const content = document.getElementById('contentInput').value.trim();
+      const status = document.getElementById('statusInput').value;
+      const startTime = document.getElementById('startTimeInput').value.replace('T', ' ');
+      const endTime = document.getElementById('endTimeInput').value.replace('T', ' ');
+      
+      if (!title) {
+        showToast('请输入标题', 'error');
+        return;
+      }
+      
+      const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+      
+      if (id) {
+        // 编辑
+        const item = findWorkItemById(id);
+        if (item) {
+          const oldStatus = item.status;
+          item.title = title;
+          item.content = content;
+          item.status = status;
+          item.startTime = startTime;
+          item.endTime = endTime;
+          item.updatedAt = now;
+          
+          if (oldStatus !== status) {
+            addActivityLog('status', item.id, item.title, 
+              `状态从"${STATUS_MAP[oldStatus].label}"变更为"${STATUS_MAP[status].label}"`,
+              oldStatus, status);
+          } else {
+            addActivityLog('update', item.id, item.title, '更新了工作项内容');
+          }
+          
+          showToast('工作项已更新');
+        }
+      } else {
+        // 新建
+        const newItem = {
+          id: generateId(),
+          title,
+          content,
+          status,
+          startTime,
+          endTime,
+          createdAt: now,
+          updatedAt: now,
+          subItems: [],
+          comments: []
+        };
+        workItems.unshift(newItem);
+        addActivityLog('create', newItem.id, newItem.title, '创建了新工作项');
+        showToast('工作项已创建');
+      }
+      
+      saveToLocalStorage();
+      closeModal('workItemModal');
+      renderStats();
+      filterWorkItems();
+    }
+
+    // 删除工作项
+    async function deleteWorkItem(id) {
+      const item = findWorkItemById(id);
+      if (!item) return;
+      
+      const confirmed = await confirmDialog(`确定要删除工作项"${item.title}"吗？删除后将移至回收站。`);
+      if (!confirmed) return;
+      
+      // 移至回收站
+      const now = new Date();
+      const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      recycledItems.unshift({
+        ...item,
+        deletedAt: now.toISOString().replace('T', ' ').substring(0, 19),
+        expiresAt: expiresAt.toISOString().replace('T', ' ').substring(0, 19)
+      });
+      
+      // 从列表移除
+      workItems = workItems.filter(i => i.id !== id);
+      
+      addActivityLog('delete', item.id, item.title, '工作项被删除到回收站');
+      saveToLocalStorage();
+      
+      showToast('工作项已移至回收站');
+      renderStats();
+      filterWorkItems();
+    }
+
+    // 查看工作项详情
+    function viewWorkItem(id) {
+      window.location.href = `work-item-detail.html?id=${id}`;
+    }
+
+    // HTML转义
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>
