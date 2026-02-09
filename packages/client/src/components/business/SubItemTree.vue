@@ -37,6 +37,7 @@
       <div v-if="item.children && item.children.length > 0 && expanded.has(item.id)" class="ml-6">
         <SubItemTree
           :items="item.children"
+          :expand-all="props.expandAll"
           @select="$emit('select', $event)"
           @edit="$emit('edit', $event)"
           @delete="$emit('delete', $event)"
@@ -51,14 +52,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import type { WorkItem } from '@/types'
 import StatusSelect from '@/components/common/StatusSelect.vue'
 import * as workItemApi from '@/api/work-item'
 import { useToast } from '@/composables/useToast'
 
-defineProps<{
+const props = defineProps<{
   items: WorkItem[]
+  expandAll?: boolean
 }>()
 
 defineEmits<{
@@ -70,6 +72,26 @@ defineEmits<{
 const expanded = ref(new Set<number>())
 const savingIds = ref(new Set<number>())
 const toast = useToast()
+
+function collectIds(list: WorkItem[], set: Set<number>) {
+  for (const it of list || []) {
+    set.add(it.id)
+    if (it.children && it.children.length) collectIds(it.children, set)
+  }
+}
+
+// expand all nodes when `expandAll` is true or items change while expandAll is true
+watch(
+  () => [props.items, props.expandAll],
+  ([items, expandAll]) => {
+    if (expandAll) {
+      const s = new Set<number>()
+      collectIds(items || [], s)
+      expanded.value = s
+    }
+  },
+  { immediate: true, deep: true }
+)
 
 function toggleExpand(id: number) {
   if (expanded.value.has(id)) {
