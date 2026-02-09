@@ -12,7 +12,7 @@
 
       <!-- 日志列表 -->
       <div class="col-span-8">
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold">
               {{ selectedDate ? `${selectedDate} 的活动` : '全部活动' }}

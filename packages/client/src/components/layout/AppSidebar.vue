@@ -1,8 +1,8 @@
 <template>
-  <aside class="w-60 bg-slate-800 text-white fixed top-0 left-0 bottom-0 flex flex-col">
+  <aside class="w-60 bg-white border-r border-slate-200 fixed top-0 left-0 bottom-0 flex flex-col z-20">
     <!-- Logo -->
-    <div class="h-16 flex items-center px-5 border-b border-slate-700">
-      <span class="text-xl font-bold">📋 Task Flow</span>
+    <div class="h-16 flex items-center px-6">
+      <span class="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">📋 Task Flow</span>
     </div>
 
     <!-- Navigation -->
@@ -14,13 +14,13 @@
         class="nav-item"
         :class="{ active: $route.path === item.path }"
       >
-        <component :is="item.icon" class="w-5 h-5" />
+        <component :is="item.icon" class="w-5 h-5 opacity-70" />
         <span>{{ item.label }}</span>
       </router-link>
     </nav>
 
     <!-- Footer -->
-    <div class="p-4 border-t border-slate-700 text-slate-400 text-sm">
+    <div class="p-6 border-t border-slate-100 text-slate-400 text-xs">
       <div>Task Flow v1.0.0</div>
     </div>
   </aside>
@@ -38,9 +38,9 @@ const navItems = [
 
 <style scoped>
 .nav-item {
-  @apply flex items-center gap-3 px-5 py-3 text-white/70 cursor-pointer transition-all border-l-[3px] border-transparent hover:bg-white/5 hover:text-white;
+  @apply flex items-center gap-3 px-6 py-3.5 text-slate-600 cursor-pointer transition-all hover:bg-slate-50 hover:text-primary-600;
 }
 .nav-item.active {
-  @apply bg-white/10 text-white border-l-primary;
+  @apply bg-primary-50 text-primary-700 font-medium;
 }
 </style>

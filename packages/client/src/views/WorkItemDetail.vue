@@ -15,7 +15,7 @@
       </div>
 
       <!-- 基本信息 -->
-      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
         <div class="flex items-start justify-between mb-4">
           <div>
             <h2 class="text-xl font-bold text-slate-800 mb-2">{{ currentItem.title }}</h2>
@@ -58,7 +58,7 @@
       </div>
 
       <!-- 子工作项 -->
-      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg font-semibold">子工作项</h3>
           <BaseButton size="sm" @click="openSubItemModal">
@@ -74,7 +74,7 @@
       </div>
 
       <!-- 评论 -->
-      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
         <h3 class="text-lg font-semibold mb-4">评论</h3>
         <CommentForm :loading="commentLoading" @submit="handleAddComment" />
         <div class="mt-6">

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 hover:shadow-md transition-shadow cursor-pointer"
+    class="bg-white rounded-xl p-5 shadow-sm border border-slate-100 hover:shadow-md transition-shadow cursor-pointer"
     @click="$emit('click')"
   >
         <div class="flex items-start justify-between mb-3">
