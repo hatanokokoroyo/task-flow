@@ -1,7 +1,8 @@
 <template>
   <AppLayout title="工作项管理">
-    <!-- 统计卡片 -->
-    <div class="grid grid-cols-4 gap-4 mb-6">
+    <div class="max-w-7xl mx-auto">
+      <!-- 统计卡片 -->
+      <div class="grid grid-cols-4 gap-4 mb-6">
       <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
         <div class="text-2xl font-bold text-slate-800">{{ stats.total }}</div>
         <div class="text-sm text-slate-500">全部工作项</div>
@@ -56,6 +57,7 @@
     <BaseModal :visible="modalVisible" :title="editingItem ? '编辑工作项' : '新建工作项'" @close="closeModal">
       <WorkItemForm :work-item="editingItem" :loading="formLoading" @submit="handleSubmit" @cancel="closeModal" />
     </BaseModal>
+    </div>
 
     <!-- Toast 组件 -->
     <Toast />
