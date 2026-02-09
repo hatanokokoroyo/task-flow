@@ -2,17 +2,19 @@
   <div class="space-y-2">
     <div v-for="item in items" :key="item.id" class="sub-item-node">
       <div
-        class="flex items-center gap-2 p-3 rounded-lg hover:bg-slate-50 cursor-pointer"
+        class="flex items-center gap-2 p-3 rounded-lg hover:bg-slate-50 cursor-pointer group"
         @click="$emit('select', item)"
       >
-        <button
-          v-if="item.children && item.children.length > 0"
-          class="w-5 h-5 flex items-center justify-center text-slate-400"
-          @click.stop="toggleExpand(item.id)"
-        >
-          {{ expanded.has(item.id) ? '▼' : '▶' }}
-        </button>
-        <span v-else class="w-5" />
+        <!-- 使用固定宽度的容器包裹折叠按钮，解决有无子项时的对齐问题 -->
+        <div class="w-6 flex-shrink-0 flex items-center justify-center">
+          <button
+            v-if="item.children && item.children.length > 0"
+            class="w-5 h-5 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 rounded transition-colors"
+            @click.stop="toggleExpand(item.id)"
+          >
+            {{ expanded.has(item.id) ? '▼' : '▶' }}
+          </button>
+        </div>
 
         <StatusSelect
           v-model:modelValue="item.status"
@@ -22,19 +24,19 @@
           @change="(v) => onSave(item, { workItemId: item.id, status: v })"
         />
 
-        <span class="flex-1 text-slate-700">{{ item.title }}</span>
+        <span class="flex-1 text-slate-700 truncate">{{ item.title }}</span>
 
-        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100">
-          <button class="p-1 hover:bg-slate-100 rounded" @click.stop="$emit('edit', item)">
+        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button class="p-1 hover:bg-slate-200 rounded" @click.stop="$emit('edit', item)">
             ✏️
           </button>
-          <button class="p-1 hover:bg-slate-100 rounded" @click.stop="$emit('delete', item)">
+          <button class="p-1 hover:bg-slate-200 rounded" @click.stop="$emit('delete', item)">
             🗑️
           </button>
         </div>
       </div>
 
-      <div v-if="item.children && item.children.length > 0 && expanded.has(item.id)" class="ml-6">
+      <div v-if="item.children && item.children.length > 0 && expanded.has(item.id)" class="ml-8 border-l border-slate-100">
         <SubItemTree
           :items="item.children"
           :expand-all="props.expandAll"
@@ -119,7 +121,5 @@ async function onSave(item: WorkItem, payload: { workItemId?: number | null; sta
 </script>
 
 <style scoped>
-.sub-item-node:hover > div:first-child > div:last-child {
-  opacity: 1;
-}
+/* 使用 Tailwind group 优化 */
 </style>
