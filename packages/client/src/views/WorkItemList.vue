@@ -66,6 +66,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useWorkItemStore } from '@/stores/work-item'
 import { useToast } from '@/composables/useToast'
@@ -84,7 +85,7 @@ const store = useWorkItemStore()
 const toast = useToast()
 const { confirm } = useConfirm()
 
-const { items, loading, stats } = store
+const { items, loading, stats } = storeToRefs(store)
 
 const searchText = ref('')
 const filterStatus = ref('')
