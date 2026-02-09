@@ -1,17 +1,3 @@
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.so
-*.egg-info/
-*.egg
-.venv/
-venv/
-ENV/
-.env
-.env.*
-
 # Node.js
 node_modules/
 .npm/
@@ -45,4 +31,4 @@ Thumbs.db
 automation.log
 
 # Local
-/db
+*.db
