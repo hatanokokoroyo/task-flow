@@ -1,0 +1,66 @@
+// packages/server/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 工作项表
+model WorkItem {
+  id          Int       @id @default(autoincrement())
+  title       String    // 标题，最大200字符
+  content     String?   // 内容，最大5000字符
+  status      String    @default("pending") // pending/design/develop/test/delivery/done
+  startTime   DateTime? // 开始时间
+  endTime     DateTime? // 结束时间
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? // 软删除时间，null表示未删除
+
+  // 父子关系（自引用）
+  parentId    Int?
+  parent      WorkItem?   @relation("SubItems", fields: [parentId], references: [id], onDelete: Cascade)
+  children    WorkItem[]  @relation("SubItems")
+
+  // 关联
+  comments    Comment[]
+  logs        ActivityLog[]
+
+  @@index([status])
+  @@index([deletedAt])
+  @@index([parentId])
+}
+
+// 评论表
+model Comment {
+  id          Int       @id @default(autoincrement())
+  content     String    // 评论内容，最大2000字符
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  workItemId  Int
+  workItem    WorkItem  @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+
+  @@index([workItemId])
+}
+
+// 活动日志表
+model ActivityLog {
+  id          Int       @id @default(autoincrement())
+  type        String    // create/update/status/comment/delete/restore
+  description String    // 操作描述
+  oldValue    String?   // 变更前的值
+  newValue    String?   // 变更后的值
+  createdAt   DateTime  @default(now())
+
+  workItemId  Int
+  workItem    WorkItem  @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+
+  @@index([workItemId])
+  @@index([createdAt])
+  @@index([type])
+}

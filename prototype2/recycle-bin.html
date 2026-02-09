@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>回收站 - Task Flow</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="sidebar-logo-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 11l3 3L22 4"></path>
+              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+            </svg>
+          </div>
+          <span>Task Flow</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html" class="nav-item">
+          <span class="nav-item-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+          </span>
+          <span>工作项管理</span>
+        </a>
+        <a href="daily-log.html" class="nav-item">
+          <span class="nav-item-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </span>
+          <span>日志查看</span>
+        </a>
+        <a href="recycle-bin.html" class="nav-item active">
+          <span class="nav-item-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3,6 5,6 21,6"></polyline>
+              <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"></path>
+            </svg>
+          </span>
+          <span>回收站</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+      <!-- 头部 -->
+      <header class="header">
+        <h1 class="header-title">回收站</h1>
+        <div class="header-actions">
+          <button class="btn btn-danger" onclick="emptyRecycleBin()" id="emptyBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3,6 5,6 21,6"></polyline>
+              <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+            清空回收站
+          </button>
+        </div>
+      </header>
+
+      <!-- 内容区 -->
+      <div class="content">
+        <!-- 提示信息 -->
+        <div class="card" style="background: rgba(245, 158, 11, 0.1); border-color: var(--warning-color); margin-bottom: 24px;">
+          <div class="card-body" style="display: flex; align-items: center; gap: 12px; padding: 16px 20px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--warning-color)" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span style="color: var(--text-primary);">
+              回收站中的工作项将在删除后 <strong>7天</strong> 自动彻底删除，请及时恢复需要的项目。
+            </span>
+          </div>
+        </div>
+
+        <!-- 统计信息 -->
+        <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); max-width: 400px;">
+          <div class="stat-card">
+            <div class="stat-label">回收站项目</div>
+            <div class="stat-value" id="recycleCount">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">即将过期</div>
+            <div class="stat-value" style="color: var(--danger-color);" id="expiringCount">0</div>
+          </div>
+        </div>
+
+        <!-- 回收站列表 -->
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <h3 class="card-title">已删除的工作项</h3>
+          </div>
+          <div class="card-body" id="recycleList">
+            <!-- 动态渲染 -->
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // 页面初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      // 检查过期项目
+      checkExpiredItems();
+      renderRecycleList();
+    });
+
+    // 检查并清理过期项目
+    function checkExpiredItems() {
+      const now = new Date();
+      recycledItems = recycledItems.filter(item => {
+        const expiresAt = new Date(item.expiresAt);
+        return expiresAt > now;
+      });
+      saveToLocalStorage();
+    }
+
+    // 渲染回收站列表
+    function renderRecycleList() {
+      const container = document.getElementById('recycleList');
+      
+      // 更新统计
+      document.getElementById('recycleCount').textContent = recycledItems.length;
+      
+      // 计算即将过期（3天内）
+      const now = new Date();
+      const threeDaysLater = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+      const expiringCount = recycledItems.filter(item => {
+        const expiresAt = new Date(item.expiresAt);
+        return expiresAt <= threeDaysLater;
+      }).length;
+      document.getElementById('expiringCount').textContent = expiringCount;
+      
+      // 更新清空按钮状态
+      document.getElementById('emptyBtn').disabled = recycledItems.length === 0;
+      
+      if (recycledItems.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">🗑️</div>
+            <div class="empty-state-title">回收站是空的</div>
+            <div class="empty-state-desc">删除的工作项会出现在这里</div>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = recycledItems.map(item => {
+        const deletedAt = new Date(item.deletedAt);
+        const expiresAt = new Date(item.expiresAt);
+        const daysLeft = Math.ceil((expiresAt - now) / (24 * 60 * 60 * 1000));
+        const isExpiringSoon = daysLeft <= 3;
+        
+        return `
+          <div class="recycle-item animate-slide-up">
+            <div class="recycle-item-info">
+              <div class="recycle-item-title">
+                ${escapeHtml(item.title)}
+                ${getStatusTag(item.status)}
+              </div>
+              <div class="recycle-item-meta">
+                <span>删除于 ${formatDateTime(item.deletedAt, 'datetime')}</span>
+                <span style="margin-left: 16px; ${isExpiringSoon ? 'color: var(--danger-color); font-weight: 500;' : ''}">
+                  ${isExpiringSoon ? '⚠️' : ''} ${daysLeft}天后自动删除
+                </span>
+              </div>
+            </div>
+            <div class="recycle-item-actions">
+              <button class="btn btn-success btn-sm" onclick="restoreItem(${item.id})">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="1,4 1,10 7,10"></polyline>
+                  <path d="M3.51 15a9 9 0 102.13-9.36L1 10"></path>
+                </svg>
+                恢复
+              </button>
+              <button class="btn btn-danger btn-sm" onclick="permanentDelete(${item.id})">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                彻底删除
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 恢复工作项
+    async function restoreItem(id) {
+      const item = recycledItems.find(i => i.id === id);
+      if (!item) return;
+      
+      const confirmed = await confirmDialog(`确定要恢复工作项"${item.title}"吗？`);
+      if (!confirmed) return;
+      
+      // 从回收站移除
+      recycledItems = recycledItems.filter(i => i.id !== id);
+      
+      // 恢复到工作项列表
+      const restoredItem = { ...item };
+      delete restoredItem.deletedAt;
+      delete restoredItem.expiresAt;
+      restoredItem.updatedAt = new Date().toISOString().replace('T', ' ').substring(0, 19);
+      
+      workItems.unshift(restoredItem);
+      
+      addActivityLog('create', item.id, item.title, '从回收站恢复了工作项');
+      saveToLocalStorage();
+      
+      showToast('工作项已恢复');
+      renderRecycleList();
+    }
+
+    // 彻底删除
+    async function permanentDelete(id) {
+      const item = recycledItems.find(i => i.id === id);
+      if (!item) return;
+      
+      const confirmed = await confirmDialog(`确定要彻底删除工作项"${item.title}"吗？此操作不可恢复！`);
+      if (!confirmed) return;
+      
+      recycledItems = recycledItems.filter(i => i.id !== id);
+      saveToLocalStorage();
+      
+      showToast('工作项已彻底删除');
+      renderRecycleList();
+    }
+
+    // 清空回收站
+    async function emptyRecycleBin() {
+      if (recycledItems.length === 0) return;
+      
+      const confirmed = await confirmDialog(`确定要清空回收站吗？这将彻底删除 ${recycledItems.length} 个工作项，此操作不可恢复！`);
+      if (!confirmed) return;
+      
+      recycledItems = [];
+      saveToLocalStorage();
+      
+      showToast('回收站已清空');
+      renderRecycleList();
+    }
+
+    // HTML转义
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>
