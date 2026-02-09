@@ -19,7 +19,15 @@
         <div class="flex items-start justify-between mb-4">
           <div>
             <h2 class="text-xl font-bold text-slate-800 mb-2">{{ currentItem.title }}</h2>
-            <StatusTag :status="currentItem.status" />
+            <div>
+              <StatusSelect
+                  v-model:modelValue="selectedStatus"
+                  :workItemId="currentItem.id"
+                  :disabled="saving"
+                  @save="onSave"
+                  @change="(v) => onSave({ status: v })"
+                />
+            </div>
           </div>
           <div class="flex items-center gap-2">
             <BaseButton variant="secondary" @click="openEditModal">
@@ -134,7 +142,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 import { useWorkItemStore } from '@/stores/work-item'
@@ -145,7 +153,7 @@ import * as workItemApi from '@/api/work-item'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import BaseModal from '@/components/common/BaseModal.vue'
-import StatusTag from '@/components/common/StatusTag.vue'
+import StatusSelect from '@/components/common/StatusSelect.vue'
 import Toast from '@/components/common/Toast.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import SubItemTree from '@/components/business/SubItemTree.vue'
@@ -174,9 +182,21 @@ const editingCommentContent = ref('')
 
 const id = computed(() => Number(route.params.id))
 
+const saving = ref(false)
+
 onMounted(async () => {
   await store.fetchWorkItem(id.value)
 })
+
+const selectedStatus = ref<string>('')
+
+watch(
+  () => currentItem.value?.status,
+  (v) => {
+    selectedStatus.value = v || ''
+  },
+  { immediate: true }
+)
 
 function formatDate(date: string) {
   return dayjs(date).format('YYYY-MM-DD HH:mm')
@@ -185,6 +205,22 @@ function formatDate(date: string) {
 function goToDetail(item: WorkItem) {
   router.push(`/work-item/${item.id}`)
 }
+
+async function onSave(payload: { workItemId?: number | null; status: string }) {
+  if (!currentItem.value) return
+  saving.value = true
+  try {
+    await workItemApi.updateWorkItem(currentItem.value.id, { status: payload.status })
+    toast.success('状态已更新')
+    await store.fetchWorkItem(id.value)
+  } catch (err: any) {
+    toast.error(err.message || '状态更新失败')
+  } finally {
+    saving.value = false
+  }
+}
+
+// status updates handled by StatusSelect; listen to its `saved` event to refresh
 
 function openEditModal() {
   editingSubItem.value = null

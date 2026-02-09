@@ -14,7 +14,14 @@
         </button>
         <span v-else class="w-5" />
 
-        <StatusTag :status="item.status" />
+        <StatusSelect
+          v-model:modelValue="item.status"
+          :workItemId="item.id"
+          :disabled="savingIds.has(item.id)"
+          @save="(p) => onSave(item, p)"
+          @change="(v) => onSave(item, { workItemId: item.id, status: v })"
+        />
+
         <span class="flex-1 text-slate-700">{{ item.title }}</span>
 
         <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100">
@@ -46,7 +53,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { WorkItem } from '@/types'
-import StatusTag from '@/components/common/StatusTag.vue'
+import StatusSelect from '@/components/common/StatusSelect.vue'
+import * as workItemApi from '@/api/work-item'
+import { useToast } from '@/composables/useToast'
 
 defineProps<{
   items: WorkItem[]
@@ -59,12 +68,30 @@ defineEmits<{
 }>()
 
 const expanded = ref(new Set<number>())
+const savingIds = ref(new Set<number>())
+const toast = useToast()
 
 function toggleExpand(id: number) {
   if (expanded.value.has(id)) {
     expanded.value.delete(id)
   } else {
     expanded.value.add(id)
+  }
+}
+
+// status updates handled by StatusSelect component
+async function onSave(item: WorkItem, payload: { workItemId?: number | null; status: string }) {
+  const prev = item.status
+  savingIds.value.add(item.id)
+  try {
+    await workItemApi.updateWorkItem(item.id, { status: payload.status })
+    item.status = payload.status as any
+    toast.success('状态已更新')
+  } catch (err: any) {
+    item.status = prev
+    toast.error(err.message || '状态更新失败')
+  } finally {
+    savingIds.value.delete(item.id)
   }
 }
 </script>
