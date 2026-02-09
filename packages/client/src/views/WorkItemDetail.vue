@@ -9,10 +9,14 @@
     </div>
     <div v-else class="space-y-6">
       <!-- 面包屑 -->
-      <div class="flex items-center gap-2 text-sm text-slate-500">
-        <router-link to="/" class="hover:text-primary">工作项管理</router-link>
-        <span>/</span>
-        <span class="text-slate-800">{{ currentItem.title }}</span>
+      <div class="flex items-center gap-3 text-sm">
+        <router-link to="/" class="breadcrumb-link">工作项管理</router-link>
+        <span class="breadcrumb-sep">/</span>
+        <template v-for="(a, idx) in ancestors" :key="a.id">
+          <router-link :to="`/work-item/${a.id}`" class="breadcrumb-link">{{ a.title }}</router-link>
+          <span class="breadcrumb-sep">/</span>
+        </template>
+        <span class="text-slate-800 current-breadcrumb">{{ currentItem.title }}</span>
       </div>
 
       <!-- 基本信息 -->
@@ -68,6 +72,7 @@
         </div>
         <SubItemTree
           :items="currentItem.children || []"
+          :expand-all="true"
           @select="goToDetail"
           @edit="openEditSubItemModal"
           @delete="handleDeleteSubItem"
@@ -188,10 +193,39 @@ const editingCommentContent = ref('')
 const id = computed(() => Number(route.params.id))
 
 const saving = ref(false)
+const ancestors = ref<WorkItem[]>([])
 
 onMounted(async () => {
   await store.fetchWorkItem(id.value)
+  await fetchAncestors()
 })
+
+// re-fetch when route id changes (navigate between work items without remount)
+watch(
+  id,
+  async (v, old) => {
+    if (v && v !== old) {
+      await store.fetchWorkItem(v)
+      await fetchAncestors()
+    }
+  }
+)
+
+async function fetchAncestors() {
+  ancestors.value = []
+  const startParentId = store.currentItem?.parentId ?? null
+  let pid = startParentId
+  while (pid) {
+    try {
+      const parent = await workItemApi.getWorkItem(pid)
+      // keep top-down order: root ... immediate parent
+      ancestors.value.unshift(parent)
+      pid = parent.parentId
+    } catch (err) {
+      break
+    }
+  }
+}
 
 const selectedStatus = ref<string>('')
 
@@ -376,3 +410,30 @@ async function handleDeleteComment(comment: Comment) {
   }
 }
 </script>
+
+<style scoped>
+.breadcrumb-link {
+  color: #374151; /* slate-700 */
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.3125rem;
+}
+.breadcrumb-link:hover {
+  color: #0ea5e9; /* brighter on hover */
+  background: rgba(14,165,233,0.06);
+}
+.breadcrumb-sep {
+  color: #9ca3af; /* slate-400 */
+  font-size: 1rem;
+  margin: 0 0.125rem;
+}
+.current-breadcrumb {
+  background: linear-gradient(90deg, rgba(99,102,241,0.10), rgba(96,165,250,0.08));
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.5rem;
+  color: #0f172a; /* slate-900 */
+  font-weight: 700;
+  font-size: 1rem;
+}
+</style>
