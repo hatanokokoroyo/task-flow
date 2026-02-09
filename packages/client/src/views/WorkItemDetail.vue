@@ -1,6 +1,7 @@
 <template>
   <AppLayout title="工作项详情">
-    <div v-if="loading" class="text-center py-12 text-slate-400">
+    <div class="max-w-7xl mx-auto">
+      <div v-if="loading" class="text-center py-12 text-slate-400">
       加载中...
     </div>
     <div v-else-if="!currentItem" class="text-center py-12 text-slate-400">
@@ -137,6 +138,7 @@
         </div>
       </div>
     </BaseModal>
+    </div>
 
     <Toast />
     <ConfirmDialog />

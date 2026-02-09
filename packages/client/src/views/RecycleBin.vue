@@ -1,7 +1,8 @@
 <template>
   <AppLayout title="回收站">
-    <!-- 提示信息 -->
-    <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+    <div class="max-w-7xl mx-auto">
+      <!-- 提示信息 -->
+      <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
       <div class="flex items-center gap-2 text-yellow-800">
         <span>⚠️</span>
         <span>回收站中的工作项将在删除后 7 天自动彻底删除</span>
@@ -48,6 +49,7 @@
           </BaseButton>
         </div>
       </div>
+    </div>
     </div>
 
     <Toast />
