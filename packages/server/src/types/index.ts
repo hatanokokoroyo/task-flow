@@ -35,3 +35,11 @@ export const ActivityLogType = {
 } as const
 
 export type ActivityType = typeof ActivityLogType[keyof typeof ActivityLogType]
+
+export const WorkItemTypeEnum = {
+  FEATURE: 'FEATURE',
+  BUG: 'BUG',
+  SUPPORT: 'SUPPORT'
+} as const
+
+export type WorkItemType = typeof WorkItemTypeEnum[keyof typeof WorkItemTypeEnum]

@@ -1,20 +1,19 @@
 <template>
   <div
     class="bg-white rounded-xl p-5 shadow-sm border border-slate-100 hover:shadow-md transition-shadow cursor-pointer"
-    @click="$emit('click')"
-  >
-        <div class="flex items-start justify-between mb-3">
-          <h3 class="font-semibold text-slate-800 line-clamp-1">{{ item.title }}</h3>
-          <div>
-            <StatusSelect
-              v-model:modelValue="selectedStatus"
-              :workItemId="item.id"
-              :disabled="saving"
-              @save="onSave"
-              @change="(v) => onSave({ workItemId: item.id, status: v })"
-            />
-          </div>
-        </div>
+    @click="$emit('click')">
+    <div class="flex items-center gap-2 text-xs text-slate-500 mb-3">
+      <span v-if="item.project" class="px-2 py-0.5 bg-slate-100 rounded">📁 {{ item.project }}</span>
+      <span v-if="item.tag" class="px-2 py-0.5 bg-slate-100 rounded">🏷️ {{ item.tag }}</span>
+      <span v-if="item.type" class="px-2 py-0.5 bg-slate-100 rounded">{{ item.type }}</span>
+    </div>
+    <div class="flex items-start justify-between mb-3">
+      <h3 class="font-semibold text-slate-800 line-clamp-1">{{ item.title }}</h3>
+      <div>
+        <StatusSelect v-model:modelValue="selectedStatus" :workItemId="item.id" :disabled="saving" @save="onSave"
+          @change="(v) => onSave({ workItemId: item.id, status: v })" />
+      </div>
+    </div>
 
     <p v-if="item.content" class="text-slate-500 text-sm line-clamp-2 mb-4">
       {{ item.content }}

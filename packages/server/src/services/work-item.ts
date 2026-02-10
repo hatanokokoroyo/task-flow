@@ -89,6 +89,9 @@ export async function createWorkItem(prisma: PrismaClient, data: {
   startTime?: string
   endTime?: string
   parentId?: number
+  project?: string | null
+  tag?: string | null
+  type?: 'FEATURE' | 'BUG' | 'SUPPORT'
 }) {
   const item = await prisma.workItem.create({
     data: {
@@ -97,7 +100,10 @@ export async function createWorkItem(prisma: PrismaClient, data: {
       status: data.status || 'pending',
       startTime: data.startTime ? new Date(data.startTime) : null,
       endTime: data.endTime ? new Date(data.endTime) : null,
-      parentId: data.parentId
+      parentId: data.parentId,
+      project: data.project ?? null,
+      tag: data.tag ?? null,
+      type: data.type ?? undefined
     }
   })
 
@@ -119,6 +125,9 @@ export async function updateWorkItem(prisma: PrismaClient, id: number, data: {
   status?: string
   startTime?: string
   endTime?: string
+  project?: string | null
+  tag?: string | null
+  type?: 'FEATURE' | 'BUG' | 'SUPPORT' | undefined
 }) {
   const oldItem = await prisma.workItem.findUnique({ where: { id } })
   if (!oldItem) {
@@ -135,6 +144,18 @@ export async function updateWorkItem(prisma: PrismaClient, id: number, data: {
   if (data.content !== undefined && data.content !== oldItem.content) {
     updateData.content = data.content
     changes.push('内容')
+  }
+  if (data.project !== undefined && data.project !== oldItem.project) {
+    updateData.project = data.project
+    changes.push('项目')
+  }
+  if (data.tag !== undefined && data.tag !== oldItem.tag) {
+    updateData.tag = data.tag
+    changes.push('标签')
+  }
+  if (data.type !== undefined && data.type !== oldItem.type) {
+    updateData.type = data.type as any
+    changes.push('类型')
   }
   if (data.startTime !== undefined) {
     updateData.startTime = data.startTime ? new Date(data.startTime) : null

@@ -1,5 +1,19 @@
 <template>
   <form @submit.prevent="handleSubmit" class="space-y-4">
+    <div class="grid grid-cols-3 gap-4">
+      <BaseInput v-model="form.project" label="项目" placeholder="项目名称（可选）" />
+      <BaseInput v-model="form.tag" label="标签" placeholder="标签（可选）" />
+      <div>
+        <label class="block text-sm font-medium text-slate-700">类型</label>
+        <select v-model="form.type"
+          class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20">
+          <option value="FEATURE">功能</option>
+          <option value="BUG">缺陷</option>
+          <option value="SUPPORT">支持</option>
+        </select>
+      </div>
+    </div>
+
     <BaseInput v-model="form.title" label="标题" placeholder="请输入工作项标题" required :error="errors.title" />
 
     <div class="space-y-1">
@@ -64,7 +78,10 @@ const form = reactive({
   content: '',
   status: 'pending',
   startTime: '',
-  endTime: ''
+  endTime: '',
+  project: '',
+  tag: '',
+  type: 'FEATURE'
 })
 
 const errors = reactive({
@@ -79,6 +96,9 @@ watch(() => props.workItem, (item) => {
     form.status = item.status
     form.startTime = item.startTime ? item.startTime.slice(0, 16) : ''
     form.endTime = item.endTime ? item.endTime.slice(0, 16) : ''
+    form.project = item.project || ''
+    form.tag = item.tag || ''
+    form.type = item.type || 'FEATURE'
   } else {
     isEdit.value = false
     form.title = ''
@@ -86,6 +106,9 @@ watch(() => props.workItem, (item) => {
     form.status = 'pending'
     form.startTime = getNowLocalDatetime()
     form.endTime = ''
+    form.project = ''
+    form.tag = ''
+    form.type = 'FEATURE'
   }
 }, { immediate: true })
 
@@ -103,7 +126,10 @@ function handleSubmit() {
     status: form.status as any,
     startTime: form.startTime ? new Date(form.startTime).toISOString() : undefined,
     endTime: form.endTime ? new Date(form.endTime).toISOString() : undefined,
-    parentId: props.parentId
+    parentId: props.parentId,
+    project: form.project.trim() || undefined,
+    tag: form.tag.trim() || undefined,
+    type: form.type as any
   }
 
   emit('submit', data)
