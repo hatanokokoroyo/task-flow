@@ -12,6 +12,9 @@ datasource db {
 // 工作项表
 model WorkItem {
   id          Int       @id @default(autoincrement())
+  project     String?   // 所属项目
+  tag         String?   // 标签
+  type        String?   @default("FEATURE")
   title       String    // 标题，最大200字符
   content     String?   // 内容，最大5000字符
   status      String    @default("pending") // pending/design/develop/test/delivery/done
@@ -34,6 +37,8 @@ model WorkItem {
   @@index([deletedAt])
   @@index([parentId])
 }
+
+// Note: use plain String for `type` to keep compatibility with SQLite
 
 // 评论表
 model Comment {

@@ -4,6 +4,9 @@ export interface WorkItem {
   id: number
   title: string
   content: string | null
+  project?: string | null
+  tag?: string | null
+  type?: 'FEATURE' | 'BUG' | 'SUPPORT' | null
   status: Status
   startTime: string | null
   endTime: string | null
@@ -49,6 +52,9 @@ export interface ActivityLog {
 export interface CreateWorkItemDto {
   title: string
   content?: string
+  project?: string
+  tag?: string
+  type?: 'FEATURE' | 'BUG' | 'SUPPORT'
   status?: Status
   startTime?: string
   endTime?: string
@@ -58,6 +64,9 @@ export interface CreateWorkItemDto {
 export interface UpdateWorkItemDto {
   title?: string
   content?: string
+  project?: string | null
+  tag?: string | null
+  type?: 'FEATURE' | 'BUG' | 'SUPPORT' | null
   status?: Status
   startTime?: string
   endTime?: string

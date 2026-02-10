@@ -23,6 +23,11 @@
       <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
         <div class="flex items-start justify-between mb-4">
           <div>
+            <div class="flex items-center gap-2 mb-2 text-sm text-slate-500">
+              <span v-if="currentItem.project">📁 项目：{{ currentItem.project }}</span>
+              <span v-if="currentItem.tag">🏷️ 标签：{{ currentItem.tag }}</span>
+              <span v-if="currentItem.type">类型：{{ currentItem.type }}</span>
+            </div>
             <h2 class="text-xl font-bold text-slate-800 mb-2">{{ currentItem.title }}</h2>
             <div class="flex items-center gap-2">
               <span class="text-sm font-medium text-slate-500">状态：</span>

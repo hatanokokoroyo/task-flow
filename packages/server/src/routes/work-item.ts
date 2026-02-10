@@ -42,6 +42,9 @@ router.get('/:id', async (req, res, next) => {
 const createSchema = z.object({
   title: z.string().min(1, '标题不能为空').max(200, '标题最多200字符'),
   content: z.string().max(5000, '内容最多5000字符').optional(),
+  project: z.string().max(64).optional(),
+  tag: z.string().max(64).optional(),
+  type: z.enum(['FEATURE', 'BUG', 'SUPPORT']).optional(),
   status: z.enum(['pending', 'design', 'develop', 'test', 'delivery', 'done']).default('pending'),
   startTime: z.string().datetime().optional(),
   endTime: z.string().datetime().optional(),
@@ -62,6 +65,9 @@ router.post('/', async (req, res, next) => {
 const updateSchema = z.object({
   title: z.string().min(1, '标题不能为空').max(200, '标题最多200字符').optional(),
   content: z.string().max(5000, '内容最多5000字符').optional(),
+  project: z.string().max(64).optional().nullable(),
+  tag: z.string().max(64).optional().nullable(),
+  type: z.enum(['FEATURE', 'BUG', 'SUPPORT']).optional().nullable(),
   status: z.enum(['pending', 'design', 'develop', 'test', 'delivery', 'done']).optional(),
   startTime: z.string().datetime().optional().nullable(),
   endTime: z.string().datetime().optional().nullable()
@@ -77,7 +83,10 @@ router.put('/:id', async (req, res, next) => {
     const item = await workItemService.updateWorkItem(req.prisma, id, {
       ...data,
       startTime: data.startTime ?? undefined,
-      endTime: data.endTime ?? undefined
+      endTime: data.endTime ?? undefined,
+      project: data.project === null ? null : data.project ?? undefined,
+      tag: data.tag === null ? null : data.tag ?? undefined,
+      type: data.type === null ? undefined : data.type ?? undefined
     })
     success(res, item, '更新成功')
   } catch (err) {

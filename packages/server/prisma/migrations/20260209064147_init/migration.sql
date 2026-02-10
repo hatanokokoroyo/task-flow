@@ -1,6 +1,9 @@
 -- CreateTable
 CREATE TABLE "WorkItem" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "project" TEXT,
+    "tag" TEXT,
+    "type" TEXT DEFAULT 'FEATURE',
     "title" TEXT NOT NULL,
     "content" TEXT,
     "status" TEXT NOT NULL DEFAULT 'pending',
