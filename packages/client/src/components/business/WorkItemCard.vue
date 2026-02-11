@@ -19,7 +19,8 @@
       {{ item.content }}
     </p>
 
-    <div class="flex items-center justify-between text-sm text-slate-400 dark:text-slate-500">
+    <!-- 评论统计和更新时间 - 贴着分界线 -->
+    <div class="flex items-center justify-between text-sm text-slate-400 dark:text-slate-500 mt-auto mb-3">
       <div class="flex items-center gap-4">
         <span v-if="item.childStats" class="flex items-center gap-1">
           📁 {{ item.childStats.done }}/{{ item.childStats.total }}
@@ -32,7 +33,7 @@
     </div>
 
     <!-- 操作按钮 - 始终固定在底部 -->
-    <div class="flex items-center gap-2 mt-auto pt-4 border-t border-slate-100 dark:border-slate-700">
+    <div class="flex items-center gap-2 pt-3 border-t border-slate-100 dark:border-slate-700">
       <BaseButton size="sm" variant="ghost" @click.stop="$emit('edit')">
         ✏️ 编辑
       </BaseButton>
