@@ -3,21 +3,21 @@
     <div class="max-w-7xl mx-auto">
       <!-- 统计卡片 -->
       <div class="grid grid-cols-4 gap-4 mb-6">
-      <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
-        <div class="text-2xl font-bold text-slate-800">{{ stats.total }}</div>
-        <div class="text-sm text-slate-500">全部工作项</div>
+      <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700">
+        <div class="text-2xl font-bold text-slate-800 dark:text-white">{{ stats.total }}</div>
+        <div class="text-sm text-slate-500 dark:text-slate-400">全部工作项</div>
       </div>
-      <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
-        <div class="text-2xl font-bold text-slate-500">{{ stats.pending }}</div>
-        <div class="text-sm text-slate-500">待处理</div>
+      <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700">
+        <div class="text-2xl font-bold text-slate-500 dark:text-slate-400">{{ stats.pending }}</div>
+        <div class="text-sm text-slate-500 dark:text-slate-400">待处理</div>
       </div>
-      <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
+      <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700">
         <div class="text-2xl font-bold text-blue-500">{{ stats.inProgress }}</div>
-        <div class="text-sm text-slate-500">进行中</div>
+        <div class="text-sm text-slate-500 dark:text-slate-400">进行中</div>
       </div>
-      <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
+      <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700">
         <div class="text-2xl font-bold text-green-500">{{ stats.done }}</div>
-        <div class="text-sm text-slate-500">已完成</div>
+        <div class="text-sm text-slate-500 dark:text-slate-400">已完成</div>
       </div>
     </div>
 
@@ -25,10 +25,10 @@
     <div class="flex items-center justify-between mb-6">
       <div class="flex items-center gap-4">
         <input v-model="searchText" type="text" placeholder="搜索工作项..."
-          class="px-4 py-2 rounded-lg border border-slate-300 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20 w-64"
+          class="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20 w-64 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
           @input="debouncedSearch" />
         <select v-model="filterStatus"
-          class="px-4 py-2 rounded-lg border border-slate-300 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20"
+          class="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
           @change="loadWorkItems">
           <option value="">全部状态</option>
           <option v-for="(config, key) in STATUS_CONFIG" :key="key" :value="key">
@@ -42,10 +42,10 @@
     </div>
 
     <!-- 工作项列表 -->
-    <div v-if="loading" class="text-center py-12 text-slate-400">
+    <div v-if="loading" class="text-center py-12 text-slate-400 dark:text-slate-500">
       加载中...
     </div>
-    <div v-else-if="items.length === 0" class="text-center py-12 text-slate-400">
+    <div v-else-if="items.length === 0" class="text-center py-12 text-slate-400 dark:text-slate-500">
       暂无工作项
     </div>
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

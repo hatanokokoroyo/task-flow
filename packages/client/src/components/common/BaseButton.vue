@@ -43,9 +43,9 @@ const sizeClasses = computed(() => {
 const variantClasses = computed(() => {
   const variants = {
     primary: 'bg-primary text-white hover:bg-primary-600 active:bg-primary-700',
-    secondary: 'bg-slate-100 text-slate-700 hover:bg-slate-200 active:bg-slate-300',
+    secondary: 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 active:bg-slate-300 dark:active:bg-slate-500',
     danger: 'bg-red-500 text-white hover:bg-red-600 active:bg-red-700',
-    ghost: 'text-slate-600 hover:bg-slate-100 active:bg-slate-200'
+    ghost: 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 active:bg-slate-200 dark:active:bg-slate-600'
   }
   return variants[props.variant]
 })

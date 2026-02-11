@@ -3,31 +3,31 @@
     <textarea
       ref="textareaRef"
       v-model="editContent"
-      class="w-full min-h-[150px] p-5 rounded-xl border-2 border-primary-500 focus:outline-none bg-white shadow-sm resize-y font-mono text-sm"
+      class="w-full min-h-[150px] p-5 rounded-xl border-2 border-primary-500 focus:outline-none bg-white dark:bg-slate-700 shadow-sm resize-y font-mono text-sm text-slate-900 dark:text-slate-100"
       placeholder="输入 Markdown 内容..."
       @blur="handleBlur"
       @keydown.esc="cancelEdit"
       @keydown.ctrl.enter="handleBlur"
     ></textarea>
-    <div class="mt-2 flex justify-end gap-2 text-xs text-slate-400">
+    <div class="mt-2 flex justify-end gap-2 text-xs text-slate-400 dark:text-slate-500">
       <span>Ctrl + Enter 保存</span>
       <span>Esc 取消</span>
     </div>
   </div>
   <div 
     v-else-if="content || editable" 
-    class="markdown-container group relative border border-slate-200/60 rounded-xl bg-slate-50/40 p-5 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)] transition-all"
+    class="markdown-container group relative border border-slate-200/60 dark:border-slate-600/60 rounded-xl bg-slate-50/40 dark:bg-slate-700/40 p-5 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)] transition-all"
     :class="{ 
-      'cursor-pointer hover:bg-slate-50/80 hover:border-primary-300': editable,
+      'cursor-pointer hover:bg-slate-50/80 dark:hover:bg-slate-700/60 hover:border-primary-300 dark:hover:border-primary-600': editable,
       'min-h-[60px] flex items-center justify-center': editable && !content 
     }"
     @click="startEdit"
   >
-    <div v-if="content" class="prose prose-slate max-w-none prose-sm sm:prose-base" v-html="renderedContent"></div>
-    <div v-else-if="editable" class="text-slate-400 italic py-2">点击添加描述...</div>
+    <div v-if="content" class="prose prose-slate dark:prose-invert max-w-none prose-sm sm:prose-base" v-html="renderedContent"></div>
+    <div v-else-if="editable" class="text-slate-400 dark:text-slate-500 italic py-2">点击添加描述...</div>
     
     <div v-if="editable && content" class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-      <span class="text-xs text-primary-600 bg-primary-50 px-2 py-1 rounded-md border border-primary-100 font-medium">点击编辑</span>
+      <span class="text-xs text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/50 px-2 py-1 rounded-md border border-primary-100 dark:border-primary-800 font-medium">点击编辑</span>
     </div>
   </div>
 </template>

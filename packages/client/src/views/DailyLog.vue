@@ -20,10 +20,10 @@
           </template>
           <div class="space-y-5">
             <div>
-              <label class="text-[10px] text-gray-400 block mb-2 uppercase tracking-[0.1em] font-bold">按类型查看</label>
+              <label class="text-[10px] text-gray-400 dark:text-slate-500 block mb-2 uppercase tracking-[0.1em] font-bold">按类型查看</label>
               <select
                 v-model="filterType"
-                class="w-full text-sm border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500 transition-all px-3 py-2 bg-gray-50/50 outline-none"
+                class="w-full text-sm border-gray-200 dark:border-slate-600 rounded-lg focus:border-blue-500 focus:ring-blue-500 transition-all px-3 py-2 bg-gray-50/50 dark:bg-slate-700 outline-none text-slate-900 dark:text-slate-100"
                 @change="loadLogs"
               >
                 <option value="">显示全部</option>
@@ -36,9 +36,9 @@
               </select>
             </div>
 
-            <div v-if="selectedDate" class="pt-4 border-t border-gray-50">
+            <div v-if="selectedDate" class="pt-4 border-t border-gray-50 dark:border-slate-700">
               <button
-                class="text-[10px] font-bold text-blue-600 hover:text-blue-700 transition-colors uppercase tracking-widest flex items-center justify-center gap-2 w-full py-2.5 hover:bg-blue-50 rounded-lg border border-transparent hover:border-blue-100"
+                class="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors uppercase tracking-widest flex items-center justify-center gap-2 w-full py-2.5 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-lg border border-transparent hover:border-blue-100 dark:hover:border-slate-600"
                 @click="clearDateFilter"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -53,45 +53,45 @@
 
       <!-- 主内容列 (时间轴) -->
       <div class="flex-1 min-w-0">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col min-h-[600px]">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col min-h-[600px]">
           <!-- 日志头部 (Day Header) -->
-          <div class="p-6 bg-gray-50/80 border-b border-gray-100 flex items-center justify-between backdrop-blur-sm sticky top-0 z-10">
+          <div class="p-6 bg-gray-50/80 dark:bg-slate-700/50 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between backdrop-blur-sm sticky top-0 z-10">
             <div class="flex items-center gap-4">
               <div v-if="selectedDate" class="text-4xl font-black text-blue-600 tracking-tighter">
                 {{ formatDay(selectedDate) }}
               </div>
-              <div v-else class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div v-else class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-xl flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
               <div>
-                <div class="font-bold text-lg text-gray-900 leading-tight">
+                <div class="font-bold text-lg text-gray-900 dark:text-white leading-tight">
                   {{ selectedDate ? formatDateDisplay(selectedDate) : '近期活动' }}
                 </div>
-                <div class="text-[10px] text-gray-400 uppercase tracking-[0.2em] font-bold mt-0.5">
+                <div class="text-[10px] text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] font-bold mt-0.5">
                   {{ selectedDate ? formatWeekDay(selectedDate) : 'ACTIVITY FEED' }}
                 </div>
               </div>
             </div>
             <div class="text-right hidden sm:block">
-              <div class="text-sm font-bold text-gray-900">{{ logs.length }} 条记录</div>
-              <div class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">LOG ENTRIES</div>
+              <div class="text-sm font-bold text-gray-900 dark:text-white">{{ logs.length }} 条记录</div>
+              <div class="text-[10px] text-gray-400 dark:text-slate-500 uppercase tracking-wider font-bold">LOG ENTRIES</div>
             </div>
           </div>
 
           <!-- 时间轴内容 -->
           <div class="p-8 flex-1">
             <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-              <div class="w-10 h-10 border-4 border-blue-50 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-              <p class="text-gray-400 text-xs font-bold uppercase tracking-widest">LOADING LOGS</p>
+              <div class="w-10 h-10 border-4 border-blue-50 dark:border-slate-600 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+              <p class="text-gray-400 dark:text-slate-500 text-xs font-bold uppercase tracking-widest">LOADING LOGS</p>
             </div>
             <ActivityLogList v-else :logs="logs" />
           </div>
 
           <!-- 页脚 -->
-          <div v-if="selectedDate && !loading" class="p-6 bg-gray-50/30 border-t border-gray-50 flex justify-center mt-auto">
-             <span class="text-[10px] text-gray-400 font-bold uppercase tracking-[0.3em]">END OF DAY</span>
+          <div v-if="selectedDate && !loading" class="p-6 bg-gray-50/30 dark:bg-slate-700/30 border-t border-gray-50 dark:border-slate-700 flex justify-center mt-auto">
+             <span class="text-[10px] text-gray-400 dark:text-slate-500 font-bold uppercase tracking-[0.3em]">END OF DAY</span>
           </div>
         </div>
       </div>
