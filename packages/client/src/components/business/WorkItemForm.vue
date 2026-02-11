@@ -4,9 +4,9 @@
       <BaseInput v-model="form.project" label="项目" placeholder="项目名称（可选）" />
       <BaseInput v-model="form.tag" label="标签" placeholder="标签（可选）" />
       <div>
-        <label class="block text-sm font-medium text-slate-700">类型</label>
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">类型</label>
         <select v-model="form.type"
-          class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20">
+          class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100">
           <option value="FEATURE">功能</option>
           <option value="BUG">缺陷</option>
           <option value="SUPPORT">支持</option>
@@ -17,15 +17,15 @@
     <BaseInput v-model="form.title" label="标题" placeholder="请输入工作项标题" required :error="errors.title" />
 
     <div class="space-y-1">
-      <label class="block text-sm font-medium text-slate-700">内容</label>
+      <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">内容</label>
       <textarea v-model="form.content" placeholder="请输入工作项内容"
-        class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20 min-h-[120px]" />
+        class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20 min-h-[120px] bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100" />
     </div>
 
     <div class="space-y-1">
-      <label class="block text-sm font-medium text-slate-700">状态</label>
+      <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">状态</label>
       <select v-model="form.status"
-        class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20">
+        class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100">
         <option v-for="(config, key) in STATUS_CONFIG" :key="key" :value="key">
           {{ config.label }}
         </option>

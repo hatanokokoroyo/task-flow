@@ -2,14 +2,14 @@
   <div class="space-y-2">
     <div v-for="item in items" :key="item.id" class="sub-item-node">
       <div
-        class="flex items-center gap-2 p-3 rounded-lg hover:bg-slate-50 cursor-pointer group"
+        class="flex items-center gap-2 p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer group"
         @click="$emit('select', item)"
       >
         <!-- 使用固定宽度的容器包裹折叠按钮，解决有无子项时的对齐问题 -->
         <div class="w-6 flex-shrink-0 flex items-center justify-center">
           <button
             v-if="item.children && item.children.length > 0"
-            class="w-5 h-5 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 rounded transition-colors"
+            class="w-5 h-5 flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-200/50 dark:hover:bg-slate-600/50 rounded transition-colors"
             @click.stop="toggleExpand(item.id)"
           >
             {{ expanded.has(item.id) ? '▼' : '▶' }}
@@ -24,19 +24,19 @@
           @change="(v) => onSave(item, { workItemId: item.id, status: v })"
         />
 
-        <span class="flex-1 text-slate-700 truncate">{{ item.title }}</span>
+        <span class="flex-1 text-slate-700 dark:text-slate-200 truncate">{{ item.title }}</span>
 
         <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button class="p-1 hover:bg-slate-200 rounded" @click.stop="$emit('edit', item)">
+          <button class="p-1 hover:bg-slate-200 dark:hover:bg-slate-600 rounded" @click.stop="$emit('edit', item)">
             ✏️
           </button>
-          <button class="p-1 hover:bg-slate-200 rounded" @click.stop="$emit('delete', item)">
+          <button class="p-1 hover:bg-slate-200 dark:hover:bg-slate-600 rounded" @click.stop="$emit('delete', item)">
             🗑️
           </button>
         </div>
       </div>
 
-      <div v-if="item.children && item.children.length > 0 && expanded.has(item.id)" class="ml-8 border-l border-slate-100">
+      <div v-if="item.children && item.children.length > 0 && expanded.has(item.id)" class="ml-8 border-l border-slate-100 dark:border-slate-700">
         <SubItemTree
           :items="item.children"
           :expand-all="props.expandAll"
@@ -47,7 +47,7 @@
       </div>
     </div>
 
-    <div v-if="items.length === 0" class="text-center py-8 text-slate-400">
+    <div v-if="items.length === 0" class="text-center py-8 text-slate-400 dark:text-slate-500">
       暂无子工作项
     </div>
   </div>

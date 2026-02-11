@@ -1,14 +1,14 @@
 <template>
-  <aside class="w-64 bg-white border-r border-gray-200 fixed top-0 left-0 bottom-0 flex flex-col z-20">
+  <aside class="w-64 bg-white dark:bg-slate-800 border-r border-gray-200 dark:border-slate-700 fixed top-0 left-0 bottom-0 flex flex-col z-20">
     <!-- Logo -->
-    <div class="p-6 border-b border-gray-200">
-      <h1 class="text-xl font-bold flex items-center gap-2">
+    <div class="p-6 border-b border-gray-200 dark:border-slate-700">
+      <h1 class="text-xl font-bold flex items-center gap-2 text-gray-900 dark:text-white">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
         </svg>
         Task Flow
       </h1>
-      <p class="text-xs text-gray-500 mt-1 font-medium">本地工作日志系统</p>
+      <p class="text-xs text-gray-500 dark:text-slate-400 mt-1 font-medium">本地工作日志系统</p>
     </div>
 
     <!-- Navigation -->
@@ -18,7 +18,7 @@
         :key="item.path"
         :to="item.path"
         class="nav-item flex items-center gap-3 px-4 py-2 rounded-lg transition-colors"
-        :class="$route.path === item.path ? 'bg-blue-50 text-blue-600 font-medium' : 'text-gray-600 hover:bg-gray-100'"
+        :class="$route.path === item.path ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700'"
       >
         <component :is="item.icon" class="w-5 h-5" />
         {{ item.label }}
@@ -26,12 +26,12 @@
     </nav>
 
     <!-- User Profile Footer -->
-    <div class="p-4 border-t border-gray-200">
+    <div class="p-4 border-t border-gray-200 dark:border-slate-700">
       <div class="flex items-center gap-3 px-2">
-        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs ring-2 ring-blue-50">我</div>
+        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs ring-2 ring-blue-50 dark:ring-blue-900/50">我</div>
         <div class="flex-1 min-w-0">
-          <p class="text-sm font-medium text-gray-900 truncate">本地用户</p>
-          <p class="text-xs text-gray-500 truncate">离线模式</p>
+          <p class="text-sm font-medium text-gray-900 dark:text-white truncate">本地用户</p>
+          <p class="text-xs text-gray-500 dark:text-slate-400 truncate">离线模式</p>
         </div>
       </div>
     </div>

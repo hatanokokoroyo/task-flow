@@ -1,10 +1,10 @@
 <template>
   <AppLayout title="工作项详情">
     <div class="max-w-7xl mx-auto">
-      <div v-if="loading" class="text-center py-12 text-slate-400">
+      <div v-if="loading" class="text-center py-12 text-slate-400 dark:text-slate-500">
       加载中...
     </div>
-    <div v-else-if="!currentItem" class="text-center py-12 text-slate-400">
+    <div v-else-if="!currentItem" class="text-center py-12 text-slate-400 dark:text-slate-500">
       工作项不存在
     </div>
     <div v-else class="space-y-6">
@@ -16,21 +16,21 @@
           <router-link :to="`/work-item/${a.id}`" class="breadcrumb-link">{{ a.title }}</router-link>
           <span class="breadcrumb-sep">/</span>
         </template>
-        <span class="text-slate-800 current-breadcrumb">{{ currentItem.title }}</span>
+        <span class="text-slate-800 dark:text-slate-100 current-breadcrumb">{{ currentItem.title }}</span>
       </div>
 
       <!-- 基本信息 -->
-      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
+      <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
         <div class="flex items-start justify-between mb-4">
           <div>
-            <div class="flex items-center gap-2 mb-2 text-sm text-slate-500">
+            <div class="flex items-center gap-2 mb-2 text-sm text-slate-500 dark:text-slate-400">
               <span v-if="currentItem.project">📁 项目：{{ currentItem.project }}</span>
               <span v-if="currentItem.tag">🏷️ 标签：{{ currentItem.tag }}</span>
               <span v-if="currentItem.type">类型：{{ currentItem.type }}</span>
             </div>
-            <h2 class="text-xl font-bold text-slate-800 mb-2">{{ currentItem.title }}</h2>
+            <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2">{{ currentItem.title }}</h2>
             <div class="flex items-center gap-2">
-              <span class="text-sm font-medium text-slate-500">状态：</span>
+              <span class="text-sm font-medium text-slate-500 dark:text-slate-400">状态：</span>
               <StatusSelect
                   v-model:modelValue="selectedStatus"
                   :workItemId="currentItem.id"
@@ -57,7 +57,7 @@
           @save="handleUpdateContent"
         />
 
-        <div class="flex items-center gap-6 text-sm text-slate-500">
+        <div class="flex items-center gap-6 text-sm text-slate-500 dark:text-slate-400">
           <span v-if="currentItem.startTime">
             开始：{{ formatDate(currentItem.startTime) }}
           </span>
@@ -70,9 +70,9 @@
       </div>
 
       <!-- 子工作项 -->
-      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
+      <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold">子工作项</h3>
+          <h3 class="text-lg font-semibold text-slate-900 dark:text-white">子工作项</h3>
           <BaseButton size="sm" @click="openSubItemModal">
             ➕ 添加子项
           </BaseButton>
@@ -87,8 +87,8 @@
       </div>
 
       <!-- 评论 -->
-      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
-        <h3 class="text-lg font-semibold mb-4">评论</h3>
+      <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
+        <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">评论</h3>
         <CommentForm :loading="commentLoading" @submit="handleAddComment" />
         <div class="mt-6">
           <CommentList
@@ -138,7 +138,7 @@
       <div class="space-y-4">
         <textarea
           v-model="editingCommentContent"
-          class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20 min-h-[120px]"
+          class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20 min-h-[120px] bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
         />
         <div class="flex justify-end gap-3">
           <BaseButton variant="secondary" @click="closeEditCommentModal">

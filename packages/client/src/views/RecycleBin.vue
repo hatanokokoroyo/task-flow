@@ -2,8 +2,8 @@
   <AppLayout title="回收站">
     <div class="max-w-7xl mx-auto">
       <!-- 提示信息 -->
-      <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
-      <div class="flex items-center gap-2 text-yellow-800">
+      <div class="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 mb-6">
+      <div class="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
         <span>⚠️</span>
         <span>回收站中的工作项将在删除后 7 天自动彻底删除</span>
       </div>
@@ -11,7 +11,7 @@
 
     <!-- 工具栏 -->
     <div class="flex items-center justify-between mb-6">
-      <div class="text-slate-600">
+      <div class="text-slate-600 dark:text-slate-400">
         共 {{ items.length }} 个工作项
       </div>
       <BaseButton v-if="items.length > 0" variant="danger" @click="handleClearAll">
@@ -20,21 +20,21 @@
     </div>
 
     <!-- 列表 -->
-    <div v-if="loading" class="text-center py-12 text-slate-400">
+    <div v-if="loading" class="text-center py-12 text-slate-400 dark:text-slate-500">
       加载中...
     </div>
-    <div v-else-if="items.length === 0" class="text-center py-12 text-slate-400">
+    <div v-else-if="items.length === 0" class="text-center py-12 text-slate-400 dark:text-slate-500">
       回收站是空的
     </div>
     <div v-else class="space-y-4">
       <div
         v-for="item in items"
         :key="item.id"
-        class="bg-white rounded-xl p-5 shadow-sm border border-slate-100 flex items-center justify-between"
+        class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-between"
       >
         <div>
-          <h3 class="font-semibold text-slate-800 mb-1">{{ item.title }}</h3>
-          <div class="flex items-center gap-4 text-sm text-slate-400">
+          <h3 class="font-semibold text-slate-800 dark:text-white mb-1">{{ item.title }}</h3>
+          <div class="flex items-center gap-4 text-sm text-slate-400 dark:text-slate-500">
             <StatusTag :status="item.status" />
             <span>删除于：{{ formatDate(item.deletedAt!) }}</span>
             <span class="text-red-500">{{ getRemainingDays(item.expiresAt) }} 天后彻底删除</span>

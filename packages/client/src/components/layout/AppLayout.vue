@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-screen bg-gray-50/50">
+  <div class="flex min-h-screen bg-gray-50/50 dark:bg-slate-900">
     <AppSidebar />
     <div class="flex-1 ml-64 flex flex-col min-h-screen">
       <AppHeader :title="title" />

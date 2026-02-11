@@ -1,15 +1,15 @@
 <template>
-  <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+  <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700">
     <!-- 月份导航 -->
     <div class="flex items-center justify-between mb-6">
-      <span class="text-lg font-bold">{{ currentYear }}年 {{ currentMonth }}月</span>
+      <span class="text-lg font-bold text-slate-900 dark:text-white">{{ currentYear }}年 {{ currentMonth }}月</span>
       <div class="flex gap-1">
-        <button class="p-1.5 hover:bg-gray-100 rounded text-gray-500 transition-colors" @click="prevMonth">
+        <button class="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded text-gray-500 dark:text-slate-400 transition-colors" @click="prevMonth">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <button class="p-1.5 hover:bg-gray-100 rounded text-gray-500 transition-colors" @click="nextMonth">
+        <button class="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded text-gray-500 dark:text-slate-400 transition-colors" @click="nextMonth">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
@@ -18,7 +18,7 @@
     </div>
 
     <!-- 星期头 -->
-    <div class="grid grid-cols-7 gap-1 text-center text-[10px] text-gray-400 font-bold mb-3 uppercase tracking-wider">
+    <div class="grid grid-cols-7 gap-1 text-center text-[10px] text-gray-400 dark:text-slate-500 font-bold mb-3 uppercase tracking-wider">
       <div v-for="day in weekDays" :key="day">{{ day }}</div>
     </div>
 
@@ -29,9 +29,9 @@
         :key="index"
         :class="[
           'h-8 flex items-center justify-center text-xs rounded transition-all cursor-pointer select-none',
-          !day.isCurrentMonth ? 'text-gray-300' : 'hover:bg-blue-50',
-          day.isSelected ? 'bg-blue-600 text-white font-bold shadow-md ring-4 ring-blue-100' : 
-          (day.isToday ? 'bg-blue-100 text-blue-800 font-medium' : ''),
+          !day.isCurrentMonth ? 'text-gray-300 dark:text-slate-600' : 'hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300',
+          day.isSelected ? 'bg-blue-600 text-white font-bold shadow-md ring-4 ring-blue-100 dark:ring-blue-900/50' : 
+          (day.isToday ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 font-medium' : ''),
           day.isCurrentMonth && day.count > 0 && !day.isSelected ? getIntensityClass(day.count) : ''
         ]"
         @click="selectDate(day)"
@@ -41,16 +41,16 @@
     </div>
 
     <!-- 图例 -->
-    <div class="mt-6 pt-4 border-t border-gray-50 space-y-2">
-      <div class="flex items-center gap-2 text-[10px] text-gray-500 font-medium">
-        <span class="w-3 h-3 bg-blue-50 rounded-sm"></span>
+    <div class="mt-6 pt-4 border-t border-gray-50 dark:border-slate-700 space-y-2">
+      <div class="flex items-center gap-2 text-[10px] text-gray-500 dark:text-slate-400 font-medium">
+        <span class="w-3 h-3 bg-blue-50 dark:bg-blue-900/30 rounded-sm"></span>
         <span>少量记录 (1-3)</span>
       </div>
-      <div class="flex items-center gap-2 text-[10px] text-gray-500 font-medium">
-        <span class="w-3 h-3 bg-blue-200 rounded-sm"></span>
+      <div class="flex items-center gap-2 text-[10px] text-gray-500 dark:text-slate-400 font-medium">
+        <span class="w-3 h-3 bg-blue-200 dark:bg-blue-800/50 rounded-sm"></span>
         <span>中等记录 (4-8)</span>
       </div>
-      <div class="flex items-center gap-2 text-[10px] text-gray-500 font-medium">
+      <div class="flex items-center gap-2 text-[10px] text-gray-500 dark:text-slate-400 font-medium">
         <span class="w-3 h-3 bg-blue-600 rounded-sm"></span>
         <span>大量记录 (9+)</span>
       </div>

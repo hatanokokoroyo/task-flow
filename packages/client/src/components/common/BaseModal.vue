@@ -38,22 +38,22 @@ defineEmits<{
   @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50;
 }
 .modal {
-  @apply bg-white rounded-xl shadow-xl w-full max-h-[90vh] overflow-y-auto;
+  @apply bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-h-[90vh] overflow-y-auto;
 }
 .modal-header {
-  @apply flex items-center justify-between px-6 py-5 border-b border-slate-100;
+  @apply flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-slate-700;
 }
 .modal-title {
-  @apply text-lg font-semibold;
+  @apply text-lg font-semibold text-slate-900 dark:text-white;
 }
 .modal-close {
-  @apply w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 text-xl;
+  @apply w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 text-xl;
 }
 .modal-body {
   @apply p-6;
 }
 .modal-footer {
-  @apply flex justify-end gap-3 px-6 py-4 border-t border-slate-100;
+  @apply flex justify-end gap-3 px-6 py-4 border-t border-slate-100 dark:border-slate-700;
 }
 
 .modal-enter-active,

@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-1">
-    <label v-if="label" class="block text-sm font-medium text-slate-700">
+    <label v-if="label" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
       {{ label }}
       <span v-if="required" class="text-red-500">*</span>
     </label>
@@ -13,9 +13,10 @@
         'w-full px-3 py-2 rounded-lg border transition-colors',
         error
           ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-          : 'border-slate-300 focus:border-primary focus:ring-primary',
+          : 'border-slate-300 dark:border-slate-600 focus:border-primary focus:ring-primary',
         'focus:outline-none focus:ring-2 focus:ring-opacity-20',
-        { 'bg-slate-50 cursor-not-allowed': disabled }
+        'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100',
+        { 'bg-slate-50 dark:bg-slate-800 cursor-not-allowed': disabled }
       ]"
       @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
     />

@@ -3,5 +3,12 @@
 </template>
 
 <script setup lang="ts">
-// App root component
+import { onMounted } from 'vue'
+import { useUIStore } from './stores/ui'
+
+const uiStore = useUIStore()
+
+onMounted(() => {
+  uiStore.initTheme()
+})
 </script>
