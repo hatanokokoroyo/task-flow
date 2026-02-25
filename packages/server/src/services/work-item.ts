@@ -18,7 +18,12 @@ export async function getWorkItems(prisma: PrismaClient, options: GetWorkItemsOp
   }
 
   if (status) {
-    where.status = status
+    const statuses = status.split(',').map(s => s.trim()).filter(Boolean)
+    if (statuses.length === 1) {
+      where.status = statuses[0]
+    } else if (statuses.length > 1) {
+      where.status = { in: statuses }
+    }
   }
 
   if (search) {

@@ -27,14 +27,32 @@
         <input v-model="searchText" type="text" placeholder="搜索工作项..."
           class="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20 w-64 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
           @input="debouncedSearch" />
-        <select v-model="filterStatus"
-          class="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
-          @change="loadWorkItems">
-          <option value="">全部状态</option>
-          <option v-for="(config, key) in STATUS_CONFIG" :key="key" :value="key">
-            {{ config.label }}
-          </option>
-        </select>
+        <div class="relative" ref="dropdownRef">
+          <button type="button"
+            class="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 min-w-[160px] text-left flex items-center justify-between gap-2"
+            @click="dropdownOpen = !dropdownOpen">
+            <span class="truncate">{{ filterStatusLabel }}</span>
+            <svg class="w-4 h-4 shrink-0 text-slate-400 transition-transform" :class="{ 'rotate-180': dropdownOpen }"
+              fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div v-if="dropdownOpen"
+            class="absolute z-50 mt-1 w-52 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg shadow-lg py-1">
+            <label v-for="(config, key) in STATUS_CONFIG" :key="key"
+              class="flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-600 cursor-pointer text-sm text-slate-700 dark:text-slate-200">
+              <input type="checkbox" :value="key" v-model="filterStatuses"
+                class="rounded border-slate-300 dark:border-slate-500 text-primary focus:ring-primary"
+                @change="onFilterStatusChange" />
+              <span class="inline-block w-2 h-2 rounded-full" :style="{ backgroundColor: config.color }"></span>
+              {{ config.label }}
+            </label>
+            <div class="border-t border-slate-200 dark:border-slate-600 mt-1 pt-1 px-3 py-1.5 flex justify-between">
+              <button type="button" class="text-xs text-primary hover:underline" @click="selectAllStatuses">全选</button>
+              <button type="button" class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:underline" @click="clearAllStatuses">清空</button>
+            </div>
+          </div>
+        </div>
       </div>
       <BaseButton @click="openCreateModal">
         ➕ 新建工作项
@@ -67,7 +85,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useWorkItemStore } from '@/stores/work-item'
@@ -89,24 +107,81 @@ const { confirm } = useConfirm()
 
 const { items, loading, stats } = storeToRefs(store)
 
+const STORAGE_KEY = 'taskflow-filter-statuses'
+
 const searchText = ref('')
-const filterStatus = ref('')
+const filterStatuses = ref<string[]>(loadCachedStatuses())
+const dropdownOpen = ref(false)
+const dropdownRef = ref<HTMLElement | null>(null)
 const modalVisible = ref(false)
 const editingItem = ref<WorkItem | null>(null)
 const formLoading = ref(false)
 
 let searchTimeout: number | null = null
 
+const filterStatusLabel = computed(() => {
+  if (filterStatuses.value.length === 0 || filterStatuses.value.length === Object.keys(STATUS_CONFIG).length) {
+    return '全部状态'
+  }
+  return filterStatuses.value.map(s => STATUS_CONFIG[s as keyof typeof STATUS_CONFIG]?.label).join('、')
+})
+
+function loadCachedStatuses(): string[] {
+  try {
+    const cached = localStorage.getItem(STORAGE_KEY)
+    if (cached) {
+      const parsed = JSON.parse(cached)
+      if (Array.isArray(parsed)) return parsed
+    }
+  } catch {}
+  return []
+}
+
+function saveCachedStatuses() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(filterStatuses.value))
+}
+
+function onFilterStatusChange() {
+  saveCachedStatuses()
+  loadWorkItems()
+}
+
+function selectAllStatuses() {
+  filterStatuses.value = Object.keys(STATUS_CONFIG)
+  saveCachedStatuses()
+  loadWorkItems()
+}
+
+function clearAllStatuses() {
+  filterStatuses.value = []
+  saveCachedStatuses()
+  loadWorkItems()
+}
+
+function handleClickOutside(e: MouseEvent) {
+  if (dropdownRef.value && !dropdownRef.value.contains(e.target as Node)) {
+    dropdownOpen.value = false
+  }
+}
+
 onMounted(async () => {
+  document.addEventListener('click', handleClickOutside)
   await Promise.all([
     loadWorkItems(),
     store.fetchStats()
   ])
 })
 
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
 async function loadWorkItems() {
+  const statusParam = filterStatuses.value.length > 0 && filterStatuses.value.length < Object.keys(STATUS_CONFIG).length
+    ? filterStatuses.value.join(',')
+    : undefined
   await store.fetchWorkItems({
-    status: filterStatus.value || undefined,
+    status: statusParam,
     search: searchText.value || undefined
   })
 }
