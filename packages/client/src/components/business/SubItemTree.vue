@@ -55,7 +55,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import type { WorkItem } from '@/types'
+import type { WorkItem, Status } from '@/types'
 import StatusSelect from '@/components/common/StatusSelect.vue'
 import * as workItemApi from '@/api/work-item'
 import { useToast } from '@/composables/useToast'
@@ -84,11 +84,11 @@ function collectIds(list: WorkItem[], set: Set<number>) {
 
 // expand all nodes when `expandAll` is true or items change while expandAll is true
 watch(
-  () => [props.items, props.expandAll],
+  [() => props.items, () => props.expandAll],
   ([items, expandAll]) => {
     if (expandAll) {
       const s = new Set<number>()
-      collectIds(items || [], s)
+      collectIds(items, s)
       expanded.value = s
     }
   },
@@ -104,12 +104,12 @@ function toggleExpand(id: number) {
 }
 
 // status updates handled by StatusSelect component
-async function onSave(item: WorkItem, payload: { workItemId?: number | null; status: string }) {
+async function onSave(item: WorkItem, payload: { workItemId?: number | null; status: Status }) {
   const prev = item.status
   savingIds.value.add(item.id)
   try {
     await workItemApi.updateWorkItem(item.id, { status: payload.status })
-    item.status = payload.status as any
+    item.status = payload.status
     toast.success('状态已更新')
   } catch (err: any) {
     item.status = prev

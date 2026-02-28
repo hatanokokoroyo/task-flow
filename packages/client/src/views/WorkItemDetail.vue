@@ -177,7 +177,7 @@ import SubItemTree from '@/components/business/SubItemTree.vue'
 import CommentList from '@/components/business/CommentList.vue'
 import CommentForm from '@/components/business/CommentForm.vue'
 import WorkItemForm from '@/components/business/WorkItemForm.vue'
-import type { WorkItem, Comment, CreateWorkItemDto } from '@/types'
+import type { WorkItem, Comment, CreateWorkItemDto, Status } from '@/types'
 
 const route = useRoute()
 const router = useRouter()
@@ -234,12 +234,12 @@ async function fetchAncestors() {
   }
 }
 
-const selectedStatus = ref<string>('')
+const selectedStatus = ref<Status>('pending')
 
 watch(
   () => currentItem.value?.status,
   (v) => {
-    selectedStatus.value = v || ''
+    selectedStatus.value = v || 'pending'
   },
   { immediate: true }
 )
@@ -253,7 +253,7 @@ function goToDetail(item: WorkItem) {
   router.push(`/work-item/${item.id}`)
 }
 
-async function onSave(payload: { workItemId?: number | null; status: any }) {
+async function onSave(payload: { workItemId?: number | null; status: Status }) {
   if (!currentItem.value) return
   saving.value = true
   try {

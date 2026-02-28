@@ -12,34 +12,15 @@ interface GetWorkItemsOptions {
 export async function getWorkItems(prisma: PrismaClient, options: GetWorkItemsOptions) {
   const { status, search, sort = 'updatedAt', order = 'desc', includeDeleted = false } = options
 
-  const where: Prisma.WorkItemWhereInput = {
-    parentId: null, // 只获取顶级工作项
-    deletedAt: includeDeleted ? undefined : null
-  }
+  const statuses = status
+    ? status.split(',').map(s => s.trim()).filter(Boolean)
+    : []
+  const keyword = (search || '').trim().toLowerCase()
 
-  if (status) {
-    const statuses = status.split(',').map(s => s.trim()).filter(Boolean)
-    if (statuses.length === 1) {
-      where.status = statuses[0]
-    } else if (statuses.length > 1) {
-      where.status = { in: statuses }
-    }
-  }
-
-  if (search) {
-    where.OR = [
-      { title: { contains: search } },
-      { content: { contains: search } }
-    ]
-  }
-
-  const orderBy: Prisma.WorkItemOrderByWithRelationInput = {
-    [sort]: order
-  }
-
-  const items = await prisma.workItem.findMany({
-    where,
-    orderBy,
+  const rows = await prisma.workItem.findMany({
+    where: {
+      deletedAt: includeDeleted ? undefined : null
+    },
     include: {
       _count: {
         select: {
@@ -50,11 +31,73 @@ export async function getWorkItems(prisma: PrismaClient, options: GetWorkItemsOp
     }
   })
 
-  // 计算子项统计
-  return Promise.all(items.map(async (item) => {
-    const childStats = await getChildStats(prisma, item.id)
-    return { ...item, childStats }
-  }))
+  const byParent = new Map<number | null, any[]>()
+  for (const row of rows) {
+    const key = row.parentId
+    if (!byParent.has(key)) {
+      byParent.set(key, [])
+    }
+    byParent.get(key)!.push({ ...row })
+  }
+
+  const buildTree = (parentId: number | null): any[] => {
+    const list = byParent.get(parentId) || []
+    return list.map((node) => {
+      const children = buildTree(node.id)
+      return {
+        ...node,
+        children,
+        childStats: buildChildStats(children)
+      }
+    })
+  }
+
+  const matchesSelf = (item: any): boolean => {
+    const statusMatched = statuses.length === 0 || statuses.includes(item.status)
+    const searchMatched = !keyword
+      || item.title?.toLowerCase().includes(keyword)
+      || item.content?.toLowerCase().includes(keyword)
+    return statusMatched && searchMatched
+  }
+
+  const filterTree = (list: any[]): any[] => {
+    return list
+      .map((item) => {
+        const filteredChildren = filterTree(item.children || [])
+        if (matchesSelf(item) || filteredChildren.length > 0) {
+          return {
+            ...item,
+            children: filteredChildren,
+            childStats: buildChildStats(filteredChildren)
+          }
+        }
+        return null
+      })
+      .filter(Boolean) as any[]
+  }
+
+  const compareBySort = (a: any, b: any): number => {
+    const av = normalizeSortValue(a[sort as keyof typeof a])
+    const bv = normalizeSortValue(b[sort as keyof typeof b])
+    if (av < bv) {
+      return order === 'asc' ? -1 : 1
+    }
+    if (av > bv) {
+      return order === 'asc' ? 1 : -1
+    }
+    return 0
+  }
+
+  const sortTree = (list: any[]): any[] => {
+    const sorted = [...list].sort(compareBySort)
+    return sorted.map((item) => ({
+      ...item,
+      children: sortTree(item.children || [])
+    }))
+  }
+
+  const tree = buildTree(null)
+  return sortTree(filterTree(tree))
 }
 
 export async function getWorkItemById(prisma: PrismaClient, id: number) {
@@ -239,19 +282,40 @@ export async function permanentDeleteWorkItem(prisma: PrismaClient, id: number) 
   return prisma.workItem.delete({ where: { id } })
 }
 
-async function getChildStats(prisma: PrismaClient, parentId: number) {
-  const children = await prisma.workItem.findMany({
-    where: { parentId, deletedAt: null },
-    select: { status: true }
-  })
-
-  if (children.length === 0) return null
+function buildChildStats(children: any[]) {
+  if (!children || children.length === 0) {
+    return null
+  }
 
   const total = children.length
   const done = children.filter(c => c.status === 'done').length
   const percentage = Math.round((done / total) * 100)
 
   return { total, done, percentage }
+}
+
+function normalizeSortValue(value: unknown): string | number {
+  if (value == null) {
+    return ''
+  }
+
+  if (value instanceof Date) {
+    return value.getTime()
+  }
+
+  if (typeof value === 'string') {
+    const timestamp = Date.parse(value)
+    if (!Number.isNaN(timestamp)) {
+      return timestamp
+    }
+    return value
+  }
+
+  if (typeof value === 'number') {
+    return value
+  }
+
+  return String(value)
 }
 
 function getStatusLabel(status: string): string {

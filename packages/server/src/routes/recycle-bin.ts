@@ -1,6 +1,6 @@
 import { Router, type IRouter } from 'express'
 import { success } from '../utils/response.js'
-import type { WorkItem } from '.prisma/client'
+import type { WorkItem } from '@prisma/client'
 
 const router: IRouter = Router()
 
