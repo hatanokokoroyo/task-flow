@@ -6,6 +6,7 @@ import commentRoutes from './routes/comment.js'
 import activityLogRoutes from './routes/activity-log.js'
 import recycleBinRoutes from './routes/recycle-bin.js'
 import statsRoutes from './routes/stats.js'
+import aiRoutes from './routes/ai.js'
 import { errorHandler } from './middleware/error-handler.js'
 import { z } from 'zod'
 import { success, error } from './utils/response.js'
@@ -30,6 +31,7 @@ app.use('/api/v1/comments', commentRoutes)
 app.use('/api/v1/activity-logs', activityLogRoutes)
 app.use('/api/v1/recycle-bin', recycleBinRoutes)
 app.use('/api/v1/stats', statsRoutes)
+app.use('/api/v1/ai', aiRoutes)
 
 // 评论路由 - 添加评论（挂载在 work-items 下）
 const commentSchema = z.object({

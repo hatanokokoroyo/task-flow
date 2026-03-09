@@ -43,3 +43,51 @@ export const WorkItemTypeEnum = {
 } as const
 
 export type WorkItemType = typeof WorkItemTypeEnum[keyof typeof WorkItemTypeEnum]
+
+export type AISummaryType = 'week' | 'month'
+
+export interface AISummaryRequest {
+  summaryType: AISummaryType
+  dateAnchor?: string
+  model?: string
+  temperature?: number
+  maxTokens?: number
+}
+
+export interface AISummaryResponse {
+  summary: string
+  period: {
+    type: AISummaryType
+    startDate: string
+    endDate: string
+    anchorDate: string
+  }
+  meta: {
+    model: string
+    temperature: number
+    maxTokens?: number
+    providerBaseUrl: string
+    fallback: boolean
+    fallbackReason?: string
+  }
+}
+
+export interface AIModelConfig {
+  baseUrl: string
+  apiKey: string
+  model: string
+  temperature: number
+  maxTokens?: number
+  timeoutMs: number
+  systemPrompt: string
+}
+
+export interface UpdateAIModelConfigRequest {
+  baseUrl?: string
+  apiKey?: string
+  model?: string
+  temperature?: number
+  maxTokens?: number | null
+  timeoutMs?: number
+  systemPrompt?: string
+}

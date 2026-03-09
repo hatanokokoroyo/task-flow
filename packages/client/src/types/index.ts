@@ -80,6 +80,44 @@ export interface Stats {
   recycled: number
 }
 
+export interface AISummaryResponse {
+  summary: string
+  period: {
+    type: 'week' | 'month'
+    startDate: string
+    endDate: string
+    anchorDate: string
+  }
+  meta: {
+    model: string
+    temperature: number
+    maxTokens?: number
+    providerBaseUrl: string
+    fallback: boolean
+    fallbackReason?: string
+  }
+}
+
+export interface AIModelConfig {
+  baseUrl: string
+  apiKey: string
+  model: string
+  temperature: number
+  maxTokens?: number
+  timeoutMs: number
+  systemPrompt: string
+}
+
+export interface UpdateAIModelConfigPayload {
+  baseUrl?: string
+  apiKey?: string
+  model?: string
+  temperature?: number
+  maxTokens?: number | null
+  timeoutMs?: number
+  systemPrompt?: string
+}
+
 export const STATUS_CONFIG: Record<Status, { label: string; color: string; bgColor: string }> = {
   pending: { label: '待处理', color: '#6b7280', bgColor: 'rgba(156, 163, 175, 0.15)' },
   design: { label: '设计中', color: '#3b82f6', bgColor: 'rgba(59, 130, 246, 0.15)' },
