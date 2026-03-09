@@ -1,6 +1,6 @@
 <template>
   <div
-    class="rounded-lg border hover:shadow-sm transition-shadow cursor-pointer"
+    class="w-full max-w-full overflow-hidden rounded-lg border hover:shadow-sm transition-shadow cursor-pointer"
     :class="cardClass"
     @click="$emit('click')">
     <div class="flex items-center justify-between gap-3 px-4 py-3">
@@ -8,10 +8,10 @@
         <div v-if="depth > 0" class="inline-flex items-center gap-1 mb-2 text-xs text-slate-500 dark:text-slate-400">
           <span class="px-2 py-0.5 rounded" :class="childBadgeClass">子项 · 第 {{ depth }} 级</span>
         </div>
-        <div class="flex items-center gap-2 mb-1 text-xs text-slate-500 dark:text-slate-400">
-          <span v-if="item.project" class="px-2 py-0.5 bg-slate-100 dark:bg-slate-700 rounded">{{ item.project }}</span>
-          <span v-if="item.tag" class="px-2 py-0.5 bg-slate-100 dark:bg-slate-700 rounded">{{ item.tag }}</span>
-          <span v-if="item.type" class="px-2 py-0.5 bg-slate-100 dark:bg-slate-700 rounded">{{ item.type }}</span>
+        <div class="mb-1 flex max-w-full flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+          <span v-if="item.project" class="max-w-full truncate px-2 py-0.5 bg-slate-100 dark:bg-slate-700 rounded">{{ item.project }}</span>
+          <span v-if="item.tag" class="max-w-full truncate px-2 py-0.5 bg-slate-100 dark:bg-slate-700 rounded">{{ item.tag }}</span>
+          <span v-if="item.type" class="max-w-full truncate px-2 py-0.5 bg-slate-100 dark:bg-slate-700 rounded">{{ item.type }}</span>
         </div>
         <h3 class="font-medium text-slate-800 dark:text-slate-100 truncate">{{ item.title }}</h3>
         <p v-if="item.content" class="text-slate-500 dark:text-slate-400 text-sm truncate mt-1">
