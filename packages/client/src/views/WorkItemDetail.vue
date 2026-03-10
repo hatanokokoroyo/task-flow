@@ -124,6 +124,7 @@
       <WorkItemForm
         :loading="formLoading"
         :parent-id="currentItem?.id"
+        :initial-data="subItemInitialData"
         @submit="handleAddSubItem"
         @cancel="closeSubItemModal"
       />
@@ -201,6 +202,11 @@ const id = computed(() => Number(route.params.id))
 
 const saving = ref(false)
 const ancestors = ref<WorkItem[]>([])
+const subItemInitialData = computed(() => ({
+  project: currentItem.value?.project || null,
+  tag: currentItem.value?.tag || null,
+  type: currentItem.value?.type || 'FEATURE'
+}))
 
 onMounted(async () => {
   await store.fetchWorkItem(id.value)

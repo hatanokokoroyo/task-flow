@@ -58,6 +58,11 @@ const props = defineProps<{
   workItem?: WorkItem | null
   loading?: boolean
   parentId?: number
+  initialData?: {
+    project?: string | null
+    tag?: string | null
+    type?: 'FEATURE' | 'BUG' | 'SUPPORT' | null
+  }
 }>()
 
 const emit = defineEmits<{
@@ -88,29 +93,34 @@ const errors = reactive({
   title: ''
 })
 
-watch(() => props.workItem, (item) => {
-  if (item) {
-    isEdit.value = true
-    form.title = item.title
-    form.content = item.content || ''
-    form.status = item.status
-    form.startTime = item.startTime ? item.startTime.slice(0, 16) : ''
-    form.endTime = item.endTime ? item.endTime.slice(0, 16) : ''
-    form.project = item.project || ''
-    form.tag = item.tag || ''
-    form.type = item.type || 'FEATURE'
-  } else {
+watch(
+  [() => props.workItem, () => props.initialData],
+  ([item, initialData]) => {
+    if (item) {
+      isEdit.value = true
+      form.title = item.title
+      form.content = item.content || ''
+      form.status = item.status
+      form.startTime = item.startTime ? item.startTime.slice(0, 16) : ''
+      form.endTime = item.endTime ? item.endTime.slice(0, 16) : ''
+      form.project = item.project || ''
+      form.tag = item.tag || ''
+      form.type = item.type || 'FEATURE'
+      return
+    }
+
     isEdit.value = false
     form.title = ''
     form.content = ''
     form.status = 'pending'
     form.startTime = getNowLocalDatetime()
     form.endTime = ''
-    form.project = ''
-    form.tag = ''
-    form.type = 'FEATURE'
-  }
-}, { immediate: true })
+    form.project = initialData?.project || ''
+    form.tag = initialData?.tag || ''
+    form.type = initialData?.type || 'FEATURE'
+  },
+  { immediate: true }
+)
 
 function handleSubmit() {
   errors.title = ''
