@@ -7,6 +7,7 @@
       <textarea
         v-model="content"
         placeholder="添加评论..."
+        @keydown.ctrl.enter.exact.prevent="handleSubmit"
         class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20 min-h-[80px] resize-none bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
       />
       <div class="flex justify-end mt-2">
@@ -33,7 +34,7 @@ const emit = defineEmits<{
 const content = ref('')
 
 function handleSubmit() {
-  if (!content.value.trim()) return
+  if (props.loading || !content.value.trim()) return
   emit('submit', content.value.trim())
   content.value = ''
 }

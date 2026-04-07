@@ -139,6 +139,7 @@
       <div class="space-y-4">
         <textarea
           v-model="editingCommentContent"
+          @keydown.ctrl.enter.exact.prevent="handleUpdateComment"
           class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20 min-h-[120px] bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
         />
         <div class="flex justify-end gap-3">
@@ -402,10 +403,12 @@ async function handleAddComment(content: string) {
 }
 
 async function handleUpdateComment() {
-  if (!editingComment.value) return
+  const content = editingCommentContent.value.trim()
+
+  if (!editingComment.value || commentLoading.value || !content) return
   commentLoading.value = true
   try {
-    await commentApi.updateComment(editingComment.value.id, editingCommentContent.value)
+    await commentApi.updateComment(editingComment.value.id, content)
     toast.success('评论更新成功')
     closeEditCommentModal()
     await store.fetchWorkItem(id.value)
