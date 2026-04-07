@@ -5,6 +5,16 @@
     @click="$emit('click')">
     <div class="flex items-center justify-between gap-3 px-4 py-3">
       <div class="min-w-0 flex-1">
+        <div v-if="hasChildren" class="mb-2">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+            @click.stop="$emit('toggle-expand')"
+          >
+            <span>{{ expanded ? '▼' : '▶' }}</span>
+            <span>{{ expanded ? '折叠子项' : '展开子项' }}</span>
+          </button>
+        </div>
         <div v-if="depth > 0" class="inline-flex items-center gap-1 mb-2 text-xs text-slate-500 dark:text-slate-400">
           <span class="px-2 py-0.5 rounded" :class="childBadgeClass">子项 · 第 {{ depth }} 级</span>
         </div>
@@ -63,12 +73,14 @@ import BaseButton from '@/components/common/BaseButton.vue'
 const props = defineProps<{
   item: WorkItem
   depth?: number
+  expanded?: boolean
 }>()
 
 const emit = defineEmits<{
   click: []
   edit: []
   delete: []
+  'toggle-expand': []
   'status-updated': [newStatus: Status]
 }>()
 
@@ -77,6 +89,7 @@ const saving = ref(false)
 const toast = useToast()
 
 const depth = computed(() => props.depth ?? 0)
+const hasChildren = computed(() => Boolean(props.item.children?.length))
 const LEVEL_ACCENT_CLASSES = [
   {
     line: 'border-l-blue-500 dark:border-l-blue-400',

@@ -80,9 +80,11 @@
             class="flex-1"
             :item="entry.item"
             :depth="entry.depth"
+            :expanded="!collapsedIds.has(entry.item.id)"
             @click="goToDetail(entry.item.id)"
             @edit="openEditModal(entry.item)"
             @delete="handleDelete(entry.item)"
+            @toggle-expand="toggleExpand(entry.item.id)"
             @status-updated="handleStatusUpdated" />
         </div>
       </div>
@@ -139,6 +141,7 @@ const dropdownRef = ref<HTMLElement | null>(null)
 const modalVisible = ref(false)
 const editingItem = ref<WorkItem | null>(null)
 const formLoading = ref(false)
+const collapsedIds = ref(new Set<number>())
 
 let searchTimeout: number | null = null
 
@@ -148,7 +151,7 @@ const flatItems = computed(() => {
   const visit = (list: WorkItem[], depth: number) => {
     for (const item of list) {
       result.push({ item, depth })
-      if (item.children && item.children.length > 0) {
+      if (item.children && item.children.length > 0 && !collapsedIds.value.has(item.id)) {
         visit(item.children, depth + 1)
       }
     }
@@ -167,6 +170,17 @@ const filterStatusLabel = computed(() => {
 
 function getLevelLineClass(level: number) {
   return LEVEL_LINE_CLASSES[(level - 1) % LEVEL_LINE_CLASSES.length]
+}
+
+function collectParentIds(list: WorkItem[], ids = new Set<number>()) {
+  for (const item of list) {
+    if (item.children && item.children.length > 0) {
+      ids.add(item.id)
+      collectParentIds(item.children, ids)
+    }
+  }
+
+  return ids
 }
 
 function loadCachedStatuses(): string[] {
@@ -227,6 +241,9 @@ async function loadWorkItems() {
     status: statusParam,
     search: searchText.value || undefined
   })
+
+  const parentIds = collectParentIds(items.value)
+  collapsedIds.value = parentIds
 }
 
 function debouncedSearch() {
@@ -240,6 +257,15 @@ function debouncedSearch() {
 
 function goToDetail(id: number) {
   router.push(`/work-item/${id}`)
+}
+
+function toggleExpand(id: number) {
+  if (collapsedIds.value.has(id)) {
+    collapsedIds.value.delete(id)
+    return
+  }
+
+  collapsedIds.value.add(id)
 }
 
 function openCreateModal() {
