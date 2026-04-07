@@ -1,5 +1,5 @@
 <template>
-  <div class="status-select-wrapper" :class="[customClass]" ref="wrapperRef">
+  <div class="status-select-wrapper" :class="[customClass, { 'is-open': isOpen }]" ref="wrapperRef">
     <!-- 当前状态展示/触发器 -->
     <div 
       class="status-tag cursor-pointer active:scale-95 transition-transform"
@@ -108,6 +108,10 @@ onUnmounted(() => {
   vertical-align: middle;
 }
 
+.status-select-wrapper.is-open {
+  z-index: 40;
+}
+
 .status-tag {
   display: inline-flex;
   align-items: center;
@@ -131,7 +135,7 @@ onUnmounted(() => {
   position: absolute;
   top: calc(100% + 6px);
   left: 0;
-  z-index: 100;
+  z-index: 10;
   min-width: 110px;
   background: white;
   border: 1px solid #f1f5f9;

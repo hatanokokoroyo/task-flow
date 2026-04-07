@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-full max-w-full overflow-hidden rounded-lg border hover:shadow-sm transition-shadow cursor-pointer"
+    class="w-full max-w-full overflow-visible rounded-lg border hover:shadow-sm transition-shadow cursor-pointer"
     :class="cardClass"
     @click="$emit('click')">
     <div class="flex items-center justify-between gap-3 px-4 py-3">
