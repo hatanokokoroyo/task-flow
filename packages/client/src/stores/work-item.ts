@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import * as workItemApi from '@/api/work-item'
 import * as statsApi from '@/api/stats'
-import type { WorkItem, Stats, CreateWorkItemDto, UpdateWorkItemDto } from '@/types'
+import { IN_PROGRESS_STATUSES, type WorkItem, type Stats, type CreateWorkItemDto, type UpdateWorkItemDto } from '@/types'
 
 export const useWorkItemStore = defineStore('workItem', () => {
   const items = ref<WorkItem[]>([])
@@ -19,7 +19,7 @@ export const useWorkItemStore = defineStore('workItem', () => {
   // Getters
   const pendingItems = computed(() => items.value.filter(i => i.status === 'pending'))
   const inProgressItems = computed(() => 
-    items.value.filter(i => ['design', 'develop', 'test', 'delivery'].includes(i.status))
+    items.value.filter(i => IN_PROGRESS_STATUSES.includes(i.status))
   )
   const doneItems = computed(() => items.value.filter(i => i.status === 'done'))
 

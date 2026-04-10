@@ -1,9 +1,11 @@
 import { PrismaClient } from '@prisma/client'
+import { STATUS_LABELS } from '../types/index.js'
 import type {
   AIModelConfig,
   AISummaryRequest,
   AISummaryResponse,
   AISummaryType,
+  Status,
   UpdateAIModelConfigRequest
 } from '../types/index.js'
 
@@ -553,21 +555,12 @@ function buildFallbackSummary(context: {
     workItemTitle: string
   }>
 }): string {
-  const statusMap: Record<string, string> = {
-    pending: '待处理',
-    design: '设计中',
-    develop: '开发中',
-    test: '测试中',
-    delivery: '交付中',
-    done: '已完成'
-  }
-
   const completed = context.logItems.filter(log => log.type === 'status' && log.description.includes('已完成'))
   const risks = context.logItems.filter(log => log.type === 'delete')
   const recent = context.logItems.slice(-5)
 
   const statusLine = context.statusBreakdown
-    .map(item => `${statusMap[item.status] || item.status}: ${item.count}`)
+    .map(item => `${STATUS_LABELS[item.status as Status] || item.status}: ${item.count}`)
     .join('，')
 
   return [
@@ -586,7 +579,7 @@ function buildFallbackSummary(context: {
     `- 本期移入回收站 ${risks.length} 次，建议回顾删除原因并确认是否需要恢复。`,
     '',
     `4) 下${context.summaryType === 'week' ? '周' : '月'}计划`,
-    '- 优先推进“设计中/开发中/测试中”任务闭环。',
+    '- 优先处理“暂停中”任务，并推动进行中任务闭环。',
     '- 复盘高频变更任务，减少重复沟通与状态回退。'
   ].join('\n')
 }

@@ -1,4 +1,24 @@
-export type Status = 'pending' | 'design' | 'develop' | 'test' | 'delivery' | 'done'
+export const STATUS_VALUES = ['pending', 'design', 'develop', 'paused', 'test', 'delivery', 'done'] as const
+
+export type Status = typeof STATUS_VALUES[number]
+
+type StatusConfig = {
+  label: string
+  color: string
+  bgColor: string
+}
+
+export const IN_PROGRESS_STATUSES: Status[] = ['design', 'develop', 'paused', 'test', 'delivery']
+
+export const STATUS_OPTIONS: Array<{ value: Status } & StatusConfig> = [
+  { value: 'pending', label: '待处理', color: '#6b7280', bgColor: 'rgba(156, 163, 175, 0.15)' },
+  { value: 'design', label: '设计中', color: '#3b82f6', bgColor: 'rgba(59, 130, 246, 0.15)' },
+  { value: 'develop', label: '开发中', color: '#10b981', bgColor: 'rgba(16, 185, 129, 0.15)' },
+  { value: 'paused', label: '暂停中', color: '#a16207', bgColor: 'rgba(202, 138, 4, 0.16)' },
+  { value: 'test', label: '测试中', color: '#f59e0b', bgColor: 'rgba(245, 158, 11, 0.15)' },
+  { value: 'delivery', label: '交付中', color: '#f97316', bgColor: 'rgba(249, 115, 22, 0.15)' },
+  { value: 'done', label: '已完成', color: '#16a34a', bgColor: 'rgba(34, 197, 94, 0.15)' }
+]
 
 export interface WorkItem {
   id: number
@@ -118,11 +138,7 @@ export interface UpdateAIModelConfigPayload {
   systemPrompt?: string
 }
 
-export const STATUS_CONFIG: Record<Status, { label: string; color: string; bgColor: string }> = {
-  pending: { label: '待处理', color: '#6b7280', bgColor: 'rgba(156, 163, 175, 0.15)' },
-  design: { label: '设计中', color: '#3b82f6', bgColor: 'rgba(59, 130, 246, 0.15)' },
-  develop: { label: '开发中', color: '#10b981', bgColor: 'rgba(16, 185, 129, 0.15)' },
-  test: { label: '测试中', color: '#f59e0b', bgColor: 'rgba(245, 158, 11, 0.15)' },
-  delivery: { label: '交付中', color: '#f97316', bgColor: 'rgba(249, 115, 22, 0.15)' },
-  done: { label: '已完成', color: '#16a34a', bgColor: 'rgba(34, 197, 94, 0.15)' }
-}
+export const STATUS_CONFIG: Record<Status, StatusConfig> = STATUS_OPTIONS.reduce((config, { value, ...statusConfig }) => {
+  config[value] = statusConfig
+  return config
+}, {} as Record<Status, StatusConfig>)

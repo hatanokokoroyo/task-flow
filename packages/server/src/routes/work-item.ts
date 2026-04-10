@@ -1,5 +1,6 @@
 import { Router, type IRouter } from 'express'
 import { z } from 'zod'
+import { STATUS_VALUES } from '../types/index.js'
 import { success, error } from '../utils/response.js'
 import * as workItemService from '../services/work-item.js'
 
@@ -45,7 +46,7 @@ const createSchema = z.object({
   project: z.string().max(64).optional(),
   tag: z.string().max(64).optional(),
   type: z.enum(['FEATURE', 'BUG', 'SUPPORT']).optional(),
-  status: z.enum(['pending', 'design', 'develop', 'test', 'delivery', 'done']).default('pending'),
+  status: z.enum(STATUS_VALUES).default('pending'),
   startTime: z.string().datetime().optional(),
   endTime: z.string().datetime().optional(),
   parentId: z.number().optional()
@@ -68,7 +69,7 @@ const updateSchema = z.object({
   project: z.string().max(64).optional().nullable(),
   tag: z.string().max(64).optional().nullable(),
   type: z.enum(['FEATURE', 'BUG', 'SUPPORT']).optional().nullable(),
-  status: z.enum(['pending', 'design', 'develop', 'test', 'delivery', 'done']).optional(),
+  status: z.enum(STATUS_VALUES).optional(),
   startTime: z.string().datetime().optional().nullable(),
   endTime: z.string().datetime().optional().nullable()
 })

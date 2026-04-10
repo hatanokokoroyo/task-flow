@@ -17,7 +17,7 @@ model WorkItem {
   type        String?   @default("FEATURE")
   title       String    // 标题，最大200字符
   content     String?   // 内容，最大5000字符
-  status      String    @default("pending") // pending/design/develop/test/delivery/done
+  status      String    @default("pending") // pending/design/develop/paused/test/delivery/done
   startTime   DateTime? // 开始时间
   endTime     DateTime? // 结束时间
   createdAt   DateTime  @default(now())

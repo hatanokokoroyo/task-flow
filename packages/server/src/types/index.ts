@@ -14,16 +14,31 @@ export interface ApiResponse<T = any> {
   message: string
 }
 
+export const STATUS_VALUES = ['pending', 'design', 'develop', 'paused', 'test', 'delivery', 'done'] as const
+
+export type Status = typeof STATUS_VALUES[number]
+
 export const StatusEnum = {
   PENDING: 'pending',
   DESIGN: 'design',
   DEVELOP: 'develop',
+  PAUSED: 'paused',
   TEST: 'test',
   DELIVERY: 'delivery',
   DONE: 'done'
 } as const
 
-export type Status = typeof StatusEnum[keyof typeof StatusEnum]
+export const STATUS_LABELS: Record<Status, string> = {
+  pending: '待处理',
+  design: '设计中',
+  develop: '开发中',
+  paused: '暂停中',
+  test: '测试中',
+  delivery: '交付中',
+  done: '已完成'
+}
+
+export const IN_PROGRESS_STATUSES: readonly Status[] = ['design', 'develop', 'paused', 'test', 'delivery']
 
 export const ActivityLogType = {
   CREATE: 'create',

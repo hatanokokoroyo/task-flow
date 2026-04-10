@@ -24,12 +24,7 @@
 
     <div class="space-y-1">
       <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">状态</label>
-      <select v-model="form.status"
-        class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 focus:border-primary focus:ring-primary focus:outline-none focus:ring-2 focus:ring-opacity-20 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100">
-        <option v-for="(config, key) in STATUS_CONFIG" :key="key" :value="key">
-          {{ config.label }}
-        </option>
-      </select>
+      <StatusSelect v-model:modelValue="form.status" :autosave="false" fullWidth />
     </div>
 
     <div class="grid grid-cols-2 gap-4">
@@ -52,7 +47,8 @@
 import { ref, reactive, watch } from 'vue'
 import BaseInput from '@/components/common/BaseInput.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
-import { STATUS_CONFIG, type WorkItem, type CreateWorkItemDto } from '@/types'
+import StatusSelect from '@/components/common/StatusSelect.vue'
+import type { WorkItem, CreateWorkItemDto, Status } from '@/types'
 
 const props = defineProps<{
   workItem?: WorkItem | null
@@ -78,7 +74,16 @@ function getNowLocalDatetime() {
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`
 }
 
-const form = reactive({
+const form = reactive<{
+  title: string
+  content: string
+  status: Status
+  startTime: string
+  endTime: string
+  project: string
+  tag: string
+  type: 'FEATURE' | 'BUG' | 'SUPPORT'
+}>({
   title: '',
   content: '',
   status: 'pending',
@@ -133,13 +138,13 @@ function handleSubmit() {
   const data: CreateWorkItemDto = {
     title: form.title.trim(),
     content: form.content.trim() || undefined,
-    status: form.status as any,
+    status: form.status,
     startTime: form.startTime ? new Date(form.startTime).toISOString() : undefined,
     endTime: form.endTime ? new Date(form.endTime).toISOString() : undefined,
     parentId: props.parentId,
     project: form.project.trim() || undefined,
     tag: form.tag.trim() || undefined,
-    type: form.type as any
+    type: form.type
   }
 
   emit('submit', data)

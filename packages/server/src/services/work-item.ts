@@ -1,5 +1,5 @@
 import { PrismaClient, Prisma } from '@prisma/client'
-import { ActivityLogType } from '../types/index.js'
+import { ActivityLogType, STATUS_LABELS, type Status } from '../types/index.js'
 
 interface GetWorkItemsOptions {
   status?: string
@@ -133,7 +133,7 @@ export async function getWorkItemById(prisma: PrismaClient, id: number) {
 export async function createWorkItem(prisma: PrismaClient, data: {
   title: string
   content?: string
-  status?: string
+  status?: Status
   startTime?: string
   endTime?: string
   parentId?: number
@@ -170,7 +170,7 @@ export async function createWorkItem(prisma: PrismaClient, data: {
 export async function updateWorkItem(prisma: PrismaClient, id: number, data: {
   title?: string
   content?: string
-  status?: string
+  status?: Status
   startTime?: string
   endTime?: string
   project?: string | null
@@ -319,13 +319,5 @@ function normalizeSortValue(value: unknown): string | number {
 }
 
 function getStatusLabel(status: string): string {
-  const labels: Record<string, string> = {
-    pending: '待处理',
-    design: '设计中',
-    develop: '开发中',
-    test: '测试中',
-    delivery: '交付中',
-    done: '已完成'
-  }
-  return labels[status] || status
+  return STATUS_LABELS[status as Status] || status
 }

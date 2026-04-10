@@ -21,7 +21,6 @@
           :workItemId="item.id"
           :disabled="savingIds.has(item.id)"
           @save="(p) => onSave(item, p)"
-          @change="(v) => onSave(item, { workItemId: item.id, status: v })"
         />
 
         <span class="flex-1 text-slate-700 dark:text-slate-200 truncate">{{ item.title }}</span>

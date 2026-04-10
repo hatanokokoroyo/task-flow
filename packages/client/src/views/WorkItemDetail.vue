@@ -36,7 +36,6 @@
                   :workItemId="currentItem.id"
                   :disabled="saving"
                   @save="onSave"
-                  @change="(v) => onSave({ status: v })"
                 />
             </div>
           </div>

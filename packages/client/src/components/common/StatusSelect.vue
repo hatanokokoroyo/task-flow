@@ -1,5 +1,5 @@
 <template>
-  <div class="status-select-wrapper" :class="[customClass, { 'is-open': isOpen }]" ref="wrapperRef">
+  <div class="status-select-wrapper" :class="[customClass, { 'is-open': isOpen, 'is-block': props.fullWidth }]" ref="wrapperRef">
     <!-- 当前状态展示/触发器 -->
     <div 
       class="status-tag cursor-pointer active:scale-95 transition-transform"
@@ -7,26 +7,26 @@
         backgroundColor: config.bgColor, 
         color: config.color 
       }"
-      :class="[{ 'is-disabled': props.disabled }]"
+      :class="[{ 'is-disabled': props.disabled, 'is-block': props.fullWidth }]"
       @click.stop="toggleDropdown"
     >
       <span class="status-text">{{ label }}</span>
-      <span class="ml-1 text-[10px] opacity-60">▼</span>
+      <span class="ml-1 shrink-0 text-[10px] opacity-60">▼</span>
     </div>
 
     <!-- 自定义下拉列表 -->
     <div v-if="isOpen" class="status-dropdown" @click.stop>
       <div
-        v-for="(cfg, key) in STATUS_CONFIG"
-        :key="key"
+        v-for="option in STATUS_OPTIONS"
+        :key="option.value"
         class="status-option-item"
-        @click="onSelect(key as Status)"
+        @click="onSelect(option.value)"
       >
         <span 
           class="status-option-tag"
-          :style="{ backgroundColor: cfg.bgColor, color: cfg.color }"
+          :style="{ backgroundColor: option.bgColor, color: option.color }"
         >
-          {{ cfg.label }}
+          {{ option.label }}
         </span>
       </div>
     </div>
@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { ref, watch, computed, onMounted, onUnmounted } from 'vue'
 import type { Status } from '@/types'
-import { STATUS_CONFIG } from '@/types'
+import { STATUS_CONFIG, STATUS_OPTIONS } from '@/types'
 
 const props = defineProps<{
   modelValue?: Status | null
@@ -44,6 +44,7 @@ const props = defineProps<{
   autosave?: boolean
   disabled?: boolean
   class?: string
+  fullWidth?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -108,6 +109,11 @@ onUnmounted(() => {
   vertical-align: middle;
 }
 
+.status-select-wrapper.is-block {
+  display: flex;
+  width: 100%;
+}
+
 .status-select-wrapper.is-open {
   z-index: 40;
 }
@@ -122,6 +128,12 @@ onUnmounted(() => {
   white-space: nowrap;
   user-select: none;
   transition: all 0.2s ease;
+}
+
+.status-tag.is-block {
+  width: 100%;
+  justify-content: space-between;
+  padding: 10px 12px;
 }
 
 .status-tag.is-disabled {
@@ -142,6 +154,11 @@ onUnmounted(() => {
   border-radius: 12px;
   padding: 6px;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.status-select-wrapper.is-block .status-dropdown {
+  width: 100%;
+  min-width: 100%;
 }
 
 :global(.dark) .status-dropdown {

@@ -39,13 +39,13 @@
             </button>
             <div v-if="dropdownOpen"
               class="absolute z-50 mt-1 w-52 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg shadow-lg py-1">
-              <label v-for="(config, key) in STATUS_CONFIG" :key="key"
+              <label v-for="option in STATUS_OPTIONS" :key="option.value"
                 class="flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-600 cursor-pointer text-sm text-slate-700 dark:text-slate-200">
-                <input type="checkbox" :value="key" v-model="filterStatuses"
+                <input type="checkbox" :value="option.value" v-model="filterStatuses"
                   class="rounded border-slate-300 dark:border-slate-500 text-primary focus:ring-primary"
                   @change="onFilterStatusChange" />
-                <span class="inline-block w-2 h-2 rounded-full" :style="{ backgroundColor: config.color }"></span>
-                {{ config.label }}
+                <span class="inline-block w-2 h-2 rounded-full" :style="{ backgroundColor: option.color }"></span>
+                {{ option.label }}
               </label>
               <div class="border-t border-slate-200 dark:border-slate-600 mt-1 pt-1 px-3 py-1.5 flex justify-between">
                 <button type="button" class="text-xs text-primary hover:underline" @click="selectAllStatuses">全选</button>
@@ -116,7 +116,7 @@ import Toast from '@/components/common/Toast.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import WorkItemCard from '@/components/business/WorkItemCard.vue'
 import WorkItemForm from '@/components/business/WorkItemForm.vue'
-import { STATUS_CONFIG, type WorkItem, type CreateWorkItemDto } from '@/types'
+import { STATUS_CONFIG, STATUS_OPTIONS, STATUS_VALUES, type WorkItem, type CreateWorkItemDto, type Status } from '@/types'
 
 const router = useRouter()
 const store = useWorkItemStore()
@@ -135,7 +135,7 @@ const LEVEL_LINE_CLASSES = [
 ] as const
 
 const searchText = ref('')
-const filterStatuses = ref<string[]>(loadCachedStatuses())
+const filterStatuses = ref<Status[]>(loadCachedStatuses())
 const dropdownOpen = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
 const modalVisible = ref(false)
@@ -162,10 +162,13 @@ const flatItems = computed(() => {
 })
 
 const filterStatusLabel = computed(() => {
-  if (filterStatuses.value.length === 0 || filterStatuses.value.length === Object.keys(STATUS_CONFIG).length) {
+  if (filterStatuses.value.length === 0 || filterStatuses.value.length === STATUS_VALUES.length) {
     return '全部状态'
   }
-  return filterStatuses.value.map(s => STATUS_CONFIG[s as keyof typeof STATUS_CONFIG]?.label).join('、')
+  return STATUS_VALUES
+    .filter(status => filterStatuses.value.includes(status))
+    .map(status => STATUS_CONFIG[status].label)
+    .join('、')
 })
 
 function getLevelLineClass(level: number) {
@@ -183,12 +186,18 @@ function collectParentIds(list: WorkItem[], ids = new Set<number>()) {
   return ids
 }
 
-function loadCachedStatuses(): string[] {
+function isStatus(value: unknown): value is Status {
+  return typeof value === 'string' && STATUS_VALUES.includes(value as Status)
+}
+
+function loadCachedStatuses(): Status[] {
   try {
     const cached = localStorage.getItem(STORAGE_KEY)
     if (cached) {
       const parsed = JSON.parse(cached)
-      if (Array.isArray(parsed)) return parsed
+      if (Array.isArray(parsed)) {
+        return parsed.filter(isStatus)
+      }
     }
   } catch {}
   return []
@@ -204,7 +213,7 @@ function onFilterStatusChange() {
 }
 
 function selectAllStatuses() {
-  filterStatuses.value = Object.keys(STATUS_CONFIG)
+  filterStatuses.value = [...STATUS_VALUES]
   saveCachedStatuses()
   loadWorkItems()
 }
@@ -234,7 +243,7 @@ onBeforeUnmount(() => {
 })
 
 async function loadWorkItems() {
-  const statusParam = filterStatuses.value.length > 0 && filterStatuses.value.length < Object.keys(STATUS_CONFIG).length
+  const statusParam = filterStatuses.value.length > 0 && filterStatuses.value.length < STATUS_VALUES.length
     ? filterStatuses.value.join(',')
     : undefined
   await store.fetchWorkItems({

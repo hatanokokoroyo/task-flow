@@ -30,8 +30,7 @@
       </div>
 
       <div class="flex items-center gap-2 shrink-0" @click.stop>
-        <StatusSelect v-model:modelValue="selectedStatus" :workItemId="item.id" :disabled="saving" @save="onSave"
-          @change="(v) => onSave({ workItemId: item.id, status: v })" />
+        <StatusSelect v-model:modelValue="selectedStatus" :workItemId="item.id" :disabled="saving" @save="onSave" />
         <BaseButton size="sm" variant="ghost" @click="$emit('edit')">编辑</BaseButton>
         <BaseButton size="sm" variant="ghost" @click="$emit('delete')">删除</BaseButton>
       </div>
