@@ -14,7 +14,7 @@ const DEFAULT_MODEL = 'gpt-4o-mini'
 const DEFAULT_TEMPERATURE = 0.3
 const DEFAULT_TIMEOUT_MS = 20000
 const DEFAULT_SYSTEM_PROMPT =
-  '你是工作日志分析助手。请严格使用中文输出，结构固定为：1) 完成事项 2) 进行中事项 3) 风险与阻塞 4) 下阶段计划。每段用简短项目符号，聚焦可执行信息，避免空话。'
+  '你是工作日志分析助手。请严格使用中文输出，结构固定为：1) 完成事项 2) 进行中事项 3) 待办事项。每段用简短项目符号，聚焦可执行信息，避免空话。'
 
 let aiTablesReady = false
 
