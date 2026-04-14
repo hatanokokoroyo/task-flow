@@ -68,10 +68,21 @@ const emit = defineEmits<{
 
 const isEdit = ref(!!props.workItem)
 
-function getNowLocalDatetime() {
+function getNowLocalDatetime(defaultTime?: string) {
   const now = new Date()
   const pad = (n: number) => String(n).padStart(2, '0')
-  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`
+  let hours = now.getHours()
+  let minutes = now.getMinutes()
+  let seconds = now.getSeconds()
+  if (defaultTime) {
+    const m = defaultTime.match(/^(\d{2}):(\d{2})(?::(\d{2}))?$/)
+    if (m) {
+      hours = Number(m[1])
+      minutes = Number(m[2])
+      seconds = m[3] ? Number(m[3]) : 0
+    }
+  }
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(hours)}:${pad(minutes)}:${pad(seconds)}`
 }
 
 const form = reactive<{
@@ -106,8 +117,8 @@ watch(
       form.title = item.title
       form.content = item.content || ''
       form.status = item.status
-      form.startTime = item.startTime ? item.startTime.slice(0, 16) : ''
-      form.endTime = item.endTime ? item.endTime.slice(0, 16) : ''
+        form.startTime = item.startTime ? item.startTime.slice(0, 19) : ''
+        form.endTime = item.endTime ? item.endTime.slice(0, 19) : ''
       form.project = item.project || ''
       form.tag = item.tag || ''
       form.type = item.type || 'FEATURE'
@@ -118,8 +129,8 @@ watch(
     form.title = ''
     form.content = ''
     form.status = 'pending'
-    form.startTime = getNowLocalDatetime()
-    form.endTime = ''
+      form.startTime = getNowLocalDatetime('09:00:00')
+      form.endTime = getNowLocalDatetime('18:00:00')
     form.project = initialData?.project || ''
     form.tag = initialData?.tag || ''
     form.type = initialData?.type || 'FEATURE'
