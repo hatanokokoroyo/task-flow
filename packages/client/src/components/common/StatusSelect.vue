@@ -76,6 +76,11 @@ function toggleDropdown() {
 }
 
 function onSelect(v: Status) {
+  if (v === internal.value) {
+    isOpen.value = false
+    return
+  }
+
   internal.value = v
   isOpen.value = false
   emit('update:modelValue', v)
@@ -86,7 +91,6 @@ function onSelect(v: Status) {
   }
 }
 
-// 点击外部关闭逻辑
 function handleOutsideClick(e: MouseEvent) {
   if (wrapperRef.value && !wrapperRef.value.contains(e.target as Node)) {
     isOpen.value = false

@@ -20,7 +20,7 @@
           v-model:modelValue="item.status"
           :workItemId="item.id"
           :disabled="savingIds.has(item.id)"
-          @save="(p) => onSave(item, p)"
+          @change="(status) => onSave(item, { workItemId: item.id, status })"
         />
 
         <span class="flex-1 text-slate-700 dark:text-slate-200 truncate">{{ item.title }}</span>
@@ -102,7 +102,6 @@ function toggleExpand(id: number) {
   }
 }
 
-// status updates handled by StatusSelect component
 async function onSave(item: WorkItem, payload: { workItemId?: number | null; status: Status }) {
   const prev = item.status
   savingIds.value.add(item.id)

@@ -32,11 +32,11 @@
             <div class="flex items-center gap-2">
               <span class="text-sm font-medium text-slate-500 dark:text-slate-400">状态：</span>
               <StatusSelect
-                  v-model:modelValue="selectedStatus"
-                  :workItemId="currentItem.id"
-                  :disabled="saving"
-                  @save="onSave"
-                />
+                v-model:modelValue="selectedStatus"
+                :workItemId="currentItem.id"
+                :disabled="saving"
+                @change="(status) => onSave({ status })"
+              />
             </div>
           </div>
           <div class="flex items-center gap-2">
@@ -261,19 +261,19 @@ function goToDetail(item: WorkItem) {
 
 async function onSave(payload: { workItemId?: number | null; status: Status }) {
   if (!currentItem.value) return
+  const prev = currentItem.value.status
   saving.value = true
   try {
     await workItemApi.updateWorkItem(currentItem.value.id, { status: payload.status })
     toast.success('状态已更新')
     await store.fetchWorkItem(id.value)
   } catch (err: any) {
+    selectedStatus.value = prev
     toast.error(err.message || '状态更新失败')
   } finally {
     saving.value = false
   }
 }
-
-// status updates handled by StatusSelect; listen to its `saved` event to refresh
 
 function openEditModal() {
   editingSubItem.value = null
